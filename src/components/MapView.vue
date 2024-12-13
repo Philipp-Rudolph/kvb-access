@@ -12,7 +12,7 @@
 import 'leaflet.markercluster'
 import setupMap from '/src/utils/setupMap'
 import fetchData from '/src/utils/fetchData'
-// import joinStationMarker from '/src/utils/joinStationMarker'
+import joinStationWithStairsAndElevators from '@/utils/joinStationWithStairsAndElevators'
 import mergeStationLocation from '@/utils/mergeStationLocation'
 import FloatingActionBar from './FloatingActionBar.vue'
 import { MarkerTypes } from '/src/types/MarkerTypes'
@@ -47,9 +47,11 @@ export default {
       Object.values(DATA_URLS).map(fetchData),
     )
 
-    const mergedStations = await mergeStationLocation(
+    const mergedData = joinStationWithStairsAndElevators(
       stationsData.features,
       stationLocations.features,
+      stairsData.features,
+      elevatorsData.features,
     )
 
     this.mapIcons = {
@@ -59,8 +61,12 @@ export default {
     }
 
     this.map = setupMap.init(this.$refs.mapContainer)
-    this.setupMarkers(stairsData.features, elevatorsData.features, mergedStations)
-    // this.attachZoomListener()
+    this.setupMarkers(
+      mergedData.mergedStairsData,
+      mergedData.mergedElevatorData,
+      mergedData.mergedStationLocationData,
+    )
+    this.attachZoomListener()
   },
   computed() {},
   methods: {
@@ -91,35 +97,40 @@ export default {
       )
     },
 
-    // attachZoomListener() {
-    //   const stationMarkers = document.querySelectorAll('.station-marker')
-    //   const stairsMarkers = document.querySelectorAll('.stairs-marker')
-    //   const elevatorsMarkers = document.querySelectorAll('.elevator-marker')
-    //   this.map.on('zoomend', () => {
-    //     const zoomLevel = this.map.getZoom()
-    //     if (zoomLevel <= 10) {
-    //       stationMarkers.forEach((marker) => {
-    //         marker.style.display = 'block'
-    //       })
-    //       stairsMarkers.forEach((marker) => {
-    //         marker.style.display = 'none'
-    //       })
-    //       elevatorsMarkers.forEach((marker) => {
-    //         marker.style.display = 'none'
-    //       })
-    //     } else {
-    //       stationMarkers.forEach((marker) => {
-    //         marker.style.display = 'none'
-    //       })
-    //       stairsMarkers.forEach((marker) => {
-    //         marker.style.display = 'block'
-    //       })
-    //       elevatorsMarkers.forEach((marker) => {
-    //         marker.style.display = 'block'
-    //       })
-    //     }
-    //   })
-    // },
+    attachZoomListener() {
+      const stairsMarkers = document.querySelectorAll('.stairs-marker')
+      const elevatorsMarkers = document.querySelectorAll('.elevator-marker')
+
+      // Function to update visibility based on zoom level
+      const updateMarkersVisibility = () => {
+        const zoomLevel = this.map.getZoom()
+        if (zoomLevel <= 15) {
+          // Hide markers if zoom level is <= 15
+          stairsMarkers.forEach((marker) => {
+            marker.style.visibility = 'hidden'
+          })
+          elevatorsMarkers.forEach((marker) => {
+            marker.style.visibility = 'hidden'
+          })
+        } else {
+          // Show markers if zoom level is > 15
+          stairsMarkers.forEach((marker) => {
+            marker.style.visibility = 'visible'
+          })
+          elevatorsMarkers.forEach((marker) => {
+            marker.style.visibility = 'visible'
+          })
+        }
+      }
+
+      // Initial visibility check on map load
+      updateMarkersVisibility()
+
+      // Attach zoom event listener to handle zoom changes dynamically
+      this.map.on('zoomend', () => {
+        updateMarkersVisibility()
+      })
+    },
 
     handleMarkerClick(markerData, typeData) {
       this.isMarkerSelected = true
@@ -160,6 +171,16 @@ export default {
   /* Add cursor for better UX */
   cursor: pointer;
   padding: 0.5rem !important;
+  opacity: 0.2;
+}
+
+.disorder {
+  opacity: 1;
+  border: 2px solid red;
+  /* red aura shadow */
+  box-shadow:
+    0 0 40px rgba(255, 0, 0, 0.9),
+    0 0 60px rgba(255, 255, 255, 0.6);
 }
 
 /* Hover state */
@@ -179,31 +200,34 @@ export default {
 
 /* Aurora Hover Effect */
 .icon:hover {
-  /* background: linear-gradient(45deg, #f3ec78, #af4261, #577399, #2b4f81, #0b2e59); */
   box-shadow:
-    0 50px 100px rgba(213, 9, 9, 1),
-    0 50px 150px rgb(0, 149, 255); /* Dynamic glow */
-  background-size: 400% 400%;
-  animation: box-shadow-aurora 2.5s ease-in-out infinite;
+    0 0 150px rgba(255, 60, 60, 1),
+    /* Brighter red */ 0 0 200px rgba(0, 255, 255, 1),
+    /* Brighter cyan */ 0 0 400px rgba(255, 255, 255, 0.8); /* Brighter white glow */
+  animation: box-shadow-aurora 2s infinite alternate-reverse ease-in-out;
 }
 
 @keyframes box-shadow-aurora {
   0% {
     box-shadow:
-      0 0 50px rgba(213, 9, 9, 1),
-      0 0 75px rgb(0, 149, 255); /* Dynamic glow */
+      0 0 120px rgba(255, 80, 80, 0.9),
+      0 0 250px rgba(0, 200, 255, 0.8),
+      0 0 350px rgba(255, 255, 255, 0.6);
   }
   50% {
     box-shadow:
-      0 0 250px rgba(213, 9, 9, 1),
-      0 0 250px rgb(0, 149, 255); /* Dynamic glow */
+      0 0 180px rgba(255, 50, 50, 1),
+      0 0 350px rgba(0, 255, 255, 1),
+      0 0 450px rgba(255, 255, 255, 0.9);
   }
   100% {
     box-shadow:
-      0 0 50px rgba(213, 9, 9, 1),
-      0 0 75px rgb(0, 149, 255); /* Dynamic glow */
+      0 0 150px rgba(255, 120, 120, 0.9),
+      0 0 300px rgba(50, 220, 255, 0.8),
+      0 0 400px rgba(255, 255, 255, 0.7);
   }
 }
+
 /* Active state (optional) */
 .icon:active {
   transform: scale(1.1); /* Slight shrink for a "pressed" effect */

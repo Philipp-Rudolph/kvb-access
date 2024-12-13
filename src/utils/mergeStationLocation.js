@@ -4,8 +4,6 @@ const mergeStationLocation = async (stations, stationsLocation) => {
     stationsLocation.map((location) => [location.properties.Kurzname, location]),
   )
 
-  // console.log(stations)
-
   // First, filter out stations that don't match the conditions
   const filteredStations = stations.filter((station) => {
     const stationLocation = locationMap.get(station.properties.kurzname)
@@ -20,6 +18,7 @@ const mergeStationLocation = async (stations, stationsLocation) => {
   return filteredStations.map((station) => {
     const stationLocation = locationMap.get(station.properties.kurzname)
     // create a new object with the station properties and the location properties
+    // console.log(stationLocation)
     return {
       ...station,
       ...(stationLocation || {}), // Merge only if stationLocation exists

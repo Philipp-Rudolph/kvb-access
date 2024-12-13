@@ -30,17 +30,6 @@ const setupMap = {
     })
   },
 
-  // createMarkers(data, icon, type, clickHandler) {
-  //   return data.map((item) => {
-  //     const marker = L.marker([item.geometry.coordinates[1], item.geometry.coordinates[0]], {
-  //       icon,
-  //       className: `${type}-marker`,
-  //     })
-  //     marker.on('click', () => clickHandler(item))
-  //     return marker
-  //   })
-  // },
-
   async addMarkers(data, icon, type, onClickCallback) {
     const markers = data.map((item) => {
       const marker = L.marker([item.geometry.coordinates[1], item.geometry.coordinates[0]], {
@@ -51,12 +40,29 @@ const setupMap = {
       }).addTo(this.map)
 
       L.DomUtil.addClass(marker._icon, `${type}-marker`)
+      if (item.hasDisorder || type === 'stairs' || type === 'elevator') {
+        L.DomUtil.addClass(marker._icon, 'disorder')
+      } else {
+        L.DomUtil.removeClass(marker._icon, 'disorder')
+      }
 
       marker.on('click', () => {
-        console.log('clicked', marker)
         if (onClickCallback) {
           onClickCallback(item)
         }
+      })
+
+      if (type === 'station') {
+        marker.bindPopup(`<b>${item.properties.Name}</b>`, {
+          permanent: true,
+          direction: 'top',
+        })
+      }
+
+      // event listener for zooming in on click
+      marker.on('click', () => {
+        this.map.setView([item.geometry.coordinates[1], item.geometry.coordinates[0]], 16)
+        console.log(marker)
       })
 
       // this.markerClusterGroup.addLayer(marker)
@@ -67,15 +73,8 @@ const setupMap = {
     return markers
   },
 
-  async toggleMarkersVisibility(map, markers, isVisible) {
-    const markersData = await markers
-    markersData.forEach((marker) => {
-      if (isVisible) {
-        if (!map.hasLayer(marker)) marker.addTo(map)
-      } else {
-        if (map.hasLayer(marker)) marker.removeFrom(map)
-      }
-    })
+  hightlightMarker(marker) {
+    const type = marker.L.DomUtil.addClass(marker._icon, `${type}-marker`)
   },
 }
 

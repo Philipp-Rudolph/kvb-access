@@ -7,8 +7,11 @@
       <h3 v-if="data.type.isStairs">Rolltreppe defekt</h3>
       <h3 v-if="data.type.isElevator">Aufzug defekt</h3>
       <h3 v-if="data.type.isStation">{{ data.properties.Name }}</h3>
+      <p v-if="data.type.isStation && data.hasDisorder">
+        An dieser Haltestelle gibt es Störungen an Rolltreppen und / oder Aufzügen<br />
+        Klicken Sie auf die Haltestelle um mehr Informationen zu erhalten
+      </p>
       <p v-if="data.type.isStation">Hier fahren die Linien: {{ data.properties.Linien }}</p>
-      <small><i>(klicken um zu schließen)</i></small>
     </div>
   </div>
 </template>
