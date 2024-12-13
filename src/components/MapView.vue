@@ -13,7 +13,6 @@ import 'leaflet.markercluster'
 import setupMap from '/src/utils/setupMap'
 import fetchData from '/src/utils/fetchData'
 import joinStationWithStairsAndElevators from '@/utils/joinStationWithStairsAndElevators'
-import mergeStationLocation from '@/utils/mergeStationLocation'
 import FloatingActionBar from './FloatingActionBar.vue'
 import { MarkerTypes } from '/src/types/MarkerTypes'
 
