@@ -9,6 +9,7 @@
 </template>
 
 <script>
+import L from 'leaflet'
 import 'leaflet.markercluster'
 import setupMap from '/src/utils/setupMap'
 import fetchData from '/src/utils/fetchData'
@@ -16,11 +17,13 @@ import joinStationWithStairsAndElevators from '@/utils/joinStationWithStairsAndE
 import FloatingActionBar from './FloatingActionBar.vue'
 import { MarkerTypes } from '/src/types/MarkerTypes'
 
+const BASE_URL = 'http://localhost:3000/'
+
 const DATA_URLS = {
-  STAIRS: '/api/stairs.json',
-  ELEVATORS: '/api/elevators.json',
-  STATIONS: '/api/stations.json',
-  STATION_LOCATIONS: '/api/stations-location.json',
+  STAIRS: `${BASE_URL}stairs.json`,
+  ELEVATORS: `${BASE_URL}elevators.json`,
+  STATIONS: `${BASE_URL}stations.json`,
+  STATION_LOCATIONS: `${BASE_URL}stations-location.json`,
 }
 
 export default {
@@ -36,6 +39,7 @@ export default {
         stations: null,
       },
       map: null,
+      markerCluster: null,
     }
   },
   components: {
@@ -59,7 +63,23 @@ export default {
       stations: setupMap.createIcon('/src/assets/icons/train.png'),
     }
 
-    this.map = setupMap.init(this.$refs.mapContainer)
+    this.markerCluster = L.markerClusterGroup({
+      spiderfyOnMaxZoom: false,
+      showCoverageOnHover: false,
+      zoomToBoundsOnClick: true,
+      maxClusterRadius: (zoom) => (zoom < 10 ? 80 : zoom < 15 ? 50 : 25),
+      iconCreateFunction: function (cluster) {
+        const count = cluster.getChildCount()
+        return L.divIcon({
+          html: `<div class="cluster-marker">${count}</div>`,
+          className: 'cluster-marker disorder',
+          iconSize: [40, 40],
+        })
+      },
+      disableClusteringAtZoom: 10,
+    })
+
+    this.map = setupMap.init(this.$refs.mapContainer, this.markerCluster)
     this.setupMarkers(
       mergedData.mergedStairsData,
       mergedData.mergedElevatorData,
@@ -99,11 +119,10 @@ export default {
     attachZoomListener() {
       const stairsMarkers = document.querySelectorAll('.stairs-marker')
       const elevatorsMarkers = document.querySelectorAll('.elevator-marker')
-
       // Function to update visibility based on zoom level
       const updateMarkersVisibility = () => {
         const zoomLevel = this.map.getZoom()
-        if (zoomLevel <= 15) {
+        if (zoomLevel < 16) {
           // Hide markers if zoom level is <= 15
           stairsMarkers.forEach((marker) => {
             marker.style.visibility = 'hidden'
@@ -150,8 +169,6 @@ export default {
 }
 .icon,
 .leaflet-marker-icon {
-  /* Visual appearance */
-  /* filter: invert(1); */
   object-fit: contain;
   border-radius: 50%;
   background-color: #fff;
@@ -169,8 +186,11 @@ export default {
 
   /* Add cursor for better UX */
   cursor: pointer;
-  padding: 0.5rem !important;
+  padding: 0.25rem !important;
   opacity: 0.2;
+
+  height: 40px !important;
+  width: 40px !important;
 }
 
 .disorder {
@@ -182,6 +202,12 @@ export default {
     0 0 60px rgba(255, 255, 255, 0.6);
 }
 
+.no-disorder {
+  height: 25px !important;
+  width: 25px !important;
+  opacity: 0.1;
+}
+
 /* Hover state */
 .icon:hover,
 .leaflet-marker-icon:hover {
@@ -190,11 +216,6 @@ export default {
   box-shadow:
     0 50px 100px rgba(213, 9, 9, 1),
     0 50px 150px rgb(0, 149, 255); /* Dynamic glow */
-}
-
-.station-marker {
-  height: 30px !important;
-  width: 30px !important;
 }
 
 /* Aurora Hover Effect */
@@ -239,5 +260,37 @@ export default {
   backdrop-filter: blur(10px);
   color: #fff !important;
   border-radius: 0.5rem;
+}
+
+.cluster-marker {
+  border-radius: 10%;
+  text-align: center;
+  font-size: 14px;
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
+  opacity: 0.8 !important;
+}
+
+.cluster-small {
+  width: 30px;
+  height: 30px;
+}
+
+.cluster-medium {
+  width: 40px;
+  height: 40px;
+}
+
+.cluster-large {
+  width: 50px;
+  height: 50px;
+}
+
+.leaflet-marker-icon.leaflet-cluster-anim {
+  transition: transform 0.3s ease-in-out;
+}
+
+.leaflet-marker-line {
+  stroke: rgba(0, 0, 0, 0.5);
+  stroke-width: 2px;
 }
 </style>

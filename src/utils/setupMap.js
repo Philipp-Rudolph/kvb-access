@@ -1,13 +1,19 @@
 import L from 'leaflet'
-import 'leaflet.markercluster'
 
 const setupMap = {
   map: null,
   markerClusterGroup: null,
 
-  init(containerId, initialCoordinates = [50.9413, 6.9583], zoomLevel = 13) {
+  /**
+   *
+   * @param {*} containerId
+   * @param {*} initialCoordinates
+   * @param {int} zoomLevel
+   * @returns
+   */
+  init(containerId, markerCluster, initialCoordinates = [50.9413, 6.9583], zoomLevel = 13) {
     this.map = L.map(containerId).setView(initialCoordinates, zoomLevel)
-    // this.markerClusterGroup = L.markerClusterGroup()
+    this.markerClusterGroup = markerCluster
 
     // Add OpenStreetMap tiles
     L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
@@ -16,10 +22,16 @@ const setupMap = {
       subdomains: 'abcd',
       maxZoom: 19,
     }).addTo(this.map)
+    // this.map.addLayer(this.markerClusterGroup)
 
     return this.map
   },
 
+  /**
+   *
+   * @param {string} iconUrl
+   * @returns
+   */
   createIcon(iconUrl) {
     return L.icon({
       iconUrl: iconUrl,
@@ -30,6 +42,14 @@ const setupMap = {
     })
   },
 
+  /**
+   *
+   * @param {*} data
+   * @param {*} icon
+   * @param {*} type
+   * @param {*} onClickCallback
+   * @returns
+   */
   async addMarkers(data, icon, type, onClickCallback) {
     const markers = data.map((item) => {
       const marker = L.marker([item.geometry.coordinates[1], item.geometry.coordinates[0]], {
@@ -42,7 +62,9 @@ const setupMap = {
       L.DomUtil.addClass(marker._icon, `${type}-marker`)
       if (item.hasDisorder || type === 'stairs' || type === 'elevator') {
         L.DomUtil.addClass(marker._icon, 'disorder')
+        L.DomUtil.removeClass(marker._icon, 'no-disorder')
       } else {
+        L.DomUtil.addClass(marker._icon, 'no-disorder')
         L.DomUtil.removeClass(marker._icon, 'disorder')
       }
 
@@ -50,22 +72,21 @@ const setupMap = {
         if (onClickCallback) {
           onClickCallback(item)
         }
+        this.map.setView([item.geometry.coordinates[1], item.geometry.coordinates[0]], 18)
+        console.log(marker)
       })
 
       if (type === 'station') {
-        marker.bindPopup(`<b>${item.properties.Name}</b>`, {
+        marker.bindPopup(`<b>${item.stationInfo.Haltestellenname}</b>`, {
           permanent: true,
           direction: 'top',
         })
       }
 
-      // event listener for zooming in on click
-      marker.on('click', () => {
-        this.map.setView([item.geometry.coordinates[1], item.geometry.coordinates[0]], 16)
-        console.log(marker)
-      })
+      // if (type !== 'station') {
+      //   this.markerClusterGroup.addLayer(marker)
+      // }
 
-      // this.markerClusterGroup.addLayer(marker)
       return marker
     })
 
@@ -73,6 +94,10 @@ const setupMap = {
     return markers
   },
 
+  /**
+   *
+   * @param {*} marker
+   */
   hightlightMarker(marker) {
     const type = marker.L.DomUtil.addClass(marker._icon, `${type}-marker`)
   },
