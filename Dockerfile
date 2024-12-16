@@ -1,21 +1,32 @@
-FROM node:18-alpine
+# Stage 1: Build the production app
+FROM node:18-alpine AS builder
 
 # Set the working directory
 WORKDIR /app
 
-# Copy package.json and package-lock.json
+# Copy package.json and lock file to install dependencies
 COPY package*.json ./
 
-# Install dependencies, including dev dependencies
+# Install all dependencies (including devDependencies)
 RUN npm install
-# RUN npm install @rollup/rollup-linux-arm64-musl
 
 # Copy the rest of your app files
-COPY package*.json ./
-COPY src ./src
-COPY public ./public
+COPY . . 
 
-EXPOSE 9090
+# Build the app for production
+RUN npm run build
 
-# Ensure Vite is installed and use npm to run dev
-CMD ["npx", "vite"]
+# Stage 2: Serve the production app with NGINX
+FROM nginx:stable-alpine AS production
+
+# Copy the custom NGINX configuration
+COPY nginx.conf /etc/nginx/nginx.conf
+
+# Copy the production build from the builder stage (dist folder)
+COPY --from=builder /app/dist /usr/share/nginx/html
+
+# Expose port 80 to serve the app
+EXPOSE 80
+
+# Default command to run NGINX
+CMD ["nginx", "-g", "daemon off;"]

@@ -2,9 +2,14 @@ services:
   app:
     build:
       context: .
-    volumes:
-      - .:/app # Mount the entire repo (or just src/ if needed)
-      - /app/node_modules # Use an isolated node_modules in the container
     ports:
-      - '9090:9090'
-    command: ['npm', 'run', 'dev']
+      - '80:80' # Exposing internal port 80 (NGINX) on external port 9090
+    networks:
+      - webapp
+    volumes:
+      - .:/app
+    command: ['nginx', '-g', 'daemon off;']
+
+networks:
+  webapp:
+    driver: bridge # Using the bridge network for communication between the host and the container

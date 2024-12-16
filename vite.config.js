@@ -11,6 +11,12 @@ export default defineConfig({
       '@': fileURLToPath(new URL('./src', import.meta.url)),
     },
   },
+  vueDevTools: {
+    enabled: false,
+  },
+  build: {
+    outDir: 'dist',
+  },
   server: {
     host: '0.0.0.0', // To allow external connections
     port: 9090, // Default port for development

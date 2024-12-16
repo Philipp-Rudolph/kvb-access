@@ -1,0 +1,42 @@
+# Stage 1: Build the app
+FROM node:18-alpine AS builder
+
+# Set the working directory
+WORKDIR /app
+
+# Copy package.json and package-lock.json
+COPY package*.json ./
+
+# Install dependencies (including dev dependencies for build)
+RUN npm install
+
+# Copy the rest of your app files
+COPY src ./src
+COPY public ./public
+COPY .env.prod ./.env
+COPY . . 
+
+# Expose port for development (optional, can be configured via argument)
+EXPOSE 9090
+
+# Set environment variable for build
+ARG NODE_ENV=development
+ENV NODE_ENV=$NODE_ENV
+
+# Run build only for production
+RUN npm run build
+
+# Stage 2: Serve the app with NGINX (only for production)
+FROM nginx:stable-alpine AS production
+
+# Set production environment for final stage
+ENV NODE_ENV=production
+
+# Copy the production build from the builder stage
+COPY --from=builder /app /usr/share/nginx/html
+
+# Expose port 80 for serving the app
+EXPOSE 80
+
+# Default command to run NGINX
+CMD ["nginx", "-g", "daemon off;"]

@@ -18,10 +18,10 @@
       <!-- Description Section -->
       <template v-else>
         <h3>{{ replaceAllSpecialChars(data.properties.Name) }}</h3>
-        <p v-if="data.hasDisorder" class="description">
-          An dieser Haltestelle gibt es Störungen an Rolltreppen und / oder Aufzügen. Klicken Sie
-          auf die Haltestelle um mehr Informationen zu erhalten
+        <p v-if="data.hasDisorder">
+          An dieser Haltestelle gibt es Störungen an Rolltreppen und / oder Aufzügen.
         </p>
+        <p>Klicken Sie auf die Haltestelle um mehr Informationen zu erhalten.</p>
         <p>Hier fahren die Linien: {{ data.properties.Linien.replaceAll(' ', ', ') }}</p>
       </template>
     </div>

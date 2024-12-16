@@ -6,16 +6,24 @@
     :data="selectedMarkerData"
     @close="closeMarkerSelection"
   />
+
+  <LoadingView v-if="!markers.stairs || !markers.elevators || !markers.stations" />
 </template>
 
 <script>
+// Import leaflet and leaflet.markercluster
 import L from 'leaflet'
 import 'leaflet.markercluster'
-import setupMap from '/src/utils/setupMap'
-import fetchData from '/src/utils/fetchData'
+
+// Import custom utilities
+import setupMap from '@/utils/setupMap'
+import fetchData from '@/utils/fetchData'
 import joinStationWithStairsAndElevators from '@/utils/joinStationWithStairsAndElevators'
 import FloatingActionBar from './FloatingActionBar.vue'
-import { MarkerTypes } from '/src/types/MarkerTypes'
+import LoadingView from './LoadingView.vue'
+
+// Import MarkerTypes
+import { MarkerTypes } from '@/types/MarkerTypes'
 
 // const BASE_URL = 'http://localhost:3000/'
 // const BASE_URL = 'https://data.webservice-kvb.koeln/service/opendata'
@@ -52,6 +60,7 @@ export default {
   },
   components: {
     FloatingActionBar,
+    LoadingView,
   },
   async mounted() {
     const [stairsData, elevatorsData, stationsData, stationLocations] = await Promise.all(
