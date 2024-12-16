@@ -1,11 +1,20 @@
 <template>
   <div ref="mapContainer" id="map"></div>
+
+  <!-- Show Description Bar if a marker is selected -->
   <FloatingActionBar
     v-if="isMarkerSelected"
-    :isFilterBar="false"
     :data="selectedMarkerData"
     @close="closeMarkerSelection"
   />
+
+  <!-- Show Welcome Bar if no marker is selected -->
+  <FloatingActionBar
+    v-else
+    :welcomeText="`Willkommen zur KVB Störungsmeldung! Klicken Sie auf eine Haltestelle, um mehr Informationen zu erhalten`"
+    @close="closeMarkerSelection"
+  />
+
   <LoadingView v-if="isLoading" />
 </template>
 
