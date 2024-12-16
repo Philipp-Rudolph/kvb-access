@@ -64,8 +64,6 @@ export default {
       this.isLoading = false
     })
 
-    console.log(stairsData, elevatorsData, stationsData, stationLocations)
-
     const mergedData = joinStationWithStairsAndElevators(
       stationsData.features,
       stationLocations.features,
