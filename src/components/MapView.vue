@@ -6,6 +6,7 @@
     :data="selectedMarkerData"
     @close="closeMarkerSelection"
   />
+  <LoadingView v-if="isLoading" />
 </template>
 
 <script>
@@ -15,6 +16,7 @@ import setupMap from '/src/utils/setupMap'
 import fetchData from '/src/utils/fetchData'
 import joinStationWithStairsAndElevators from '@/utils/joinStationWithStairsAndElevators'
 import FloatingActionBar from './FloatingActionBar.vue'
+import LoadingView from './LoadingView.vue'
 import { MarkerTypes } from '/src/types/MarkerTypes'
 
 // const BASE_URL = 'http://localhost:3000/'
@@ -48,15 +50,19 @@ export default {
       },
       map: null,
       markerCluster: null,
+      isLoading: true,
     }
   },
   components: {
     FloatingActionBar,
+    LoadingView,
   },
   async mounted() {
     const [stairsData, elevatorsData, stationsData, stationLocations] = await Promise.all(
       Object.values(DATA_URLS).map(fetchData),
-    )
+    ).finally(() => {
+      this.isLoading = false
+    })
 
     console.log(stairsData, elevatorsData, stationsData, stationLocations)
 
@@ -90,11 +96,14 @@ export default {
     })
 
     this.map = setupMap.init(this.$refs.mapContainer, this.markerCluster)
-    this.setupMarkers(
-      mergedData.mergedStairsData,
-      mergedData.mergedElevatorData,
-      mergedData.mergedStationLocationData,
-    )
+
+    if (!this.isLoading) {
+      this.setupMarkers(
+        mergedData.mergedStairsData,
+        mergedData.mergedElevatorData,
+        mergedData.mergedStationLocationData,
+      )
+    }
     this.attachZoomListener()
   },
   computed() {},
