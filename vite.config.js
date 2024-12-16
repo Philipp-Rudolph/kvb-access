@@ -13,10 +13,10 @@ export default defineConfig({
   },
   server: {
     host: '0.0.0.0', // To allow external connections
-    port: 8080, // Default port for development
+    port: 9090, // Default port for development
     proxy: {
       '/api': {
-        target: 'http://host.docker.internal:3000', // Use for macOS/Windows, use host IP for Linux
+        target: 'https://data.webservice-kvb.koeln/service/opendata', // Use for macOS/Windows, use host IP for Linux
         changeOrigin: true,
         rewrite: (path) => path.replace(/^\/api/, ''),
       },

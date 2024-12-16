@@ -17,13 +17,21 @@ import joinStationWithStairsAndElevators from '@/utils/joinStationWithStairsAndE
 import FloatingActionBar from './FloatingActionBar.vue'
 import { MarkerTypes } from '/src/types/MarkerTypes'
 
-const BASE_URL = 'http://localhost:3000/'
+// const BASE_URL = 'http://localhost:3000/'
+// const BASE_URL = 'https://data.webservice-kvb.koeln/service/opendata'
+
+// const DATA_URLS = {
+//   STAIRS: `${BASE_URL}stairs.json`,
+//   ELEVATORS: `${BASE_URL}elevators.json`,
+//   STATIONS: `${BASE_URL}stations.json`,
+//   STATION_LOCATIONS: `${BASE_URL}stations-location.json`,
+// }
 
 const DATA_URLS = {
-  STAIRS: `${BASE_URL}stairs.json`,
-  ELEVATORS: `${BASE_URL}elevators.json`,
-  STATIONS: `${BASE_URL}stations.json`,
-  STATION_LOCATIONS: `${BASE_URL}stations-location.json`,
+  STAIRS: `/api/fahrtreppenstoerung/json`,
+  ELEVATORS: `/api/aufzugsstoerung/json`,
+  STATIONS: `/api/haltestellenbereiche/json`,
+  STATION_LOCATIONS: `/api/haltestellen/json`,
 }
 
 export default {
@@ -49,6 +57,8 @@ export default {
     const [stairsData, elevatorsData, stationsData, stationLocations] = await Promise.all(
       Object.values(DATA_URLS).map(fetchData),
     )
+
+    console.log(stairsData, elevatorsData, stationsData, stationLocations)
 
     const mergedData = joinStationWithStairsAndElevators(
       stationsData.features,
@@ -214,8 +224,8 @@ export default {
   filter: invert(0);
   background-color: #fff;
   box-shadow:
-    0 50px 100px rgba(213, 9, 9, 1),
-    0 50px 150px rgb(0, 149, 255); /* Dynamic glow */
+    0 0 100px rgba(255, 0, 0, 0.9),
+    0 0 60px rgba(255, 255, 255, 0.6);
 }
 
 /* Aurora Hover Effect */
