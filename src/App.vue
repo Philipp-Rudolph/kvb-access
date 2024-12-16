@@ -1,0 +1,20 @@
+<script setup>
+import MapView from './components/MapView.vue'
+</script>
+
+<template>
+  <main>
+    <MapView />
+  </main>
+</template>
+
+<style>
+main {
+  height: 100vh;
+  width: 100vw;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #f5f5f5;
+}
+</style>
