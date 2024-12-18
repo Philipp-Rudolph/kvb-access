@@ -1,28 +1,62 @@
 <template>
   <div>
-    <!-- Action Bar for Marker Details -->
-    <div class="bar floating-action-bar" @click="$emit('close')">
-      <!-- Header Section -->
-      <h1 v-if="data.type.isStation">
-        Haltestelle {{ replaceAllSpecialChars(data.properties.Name) }}
-      </h1>
-      <h1 v-else-if="data.type.isStairs">Rolltreppe defekt</h1>
-      <h1 v-else-if="data.type.isElevator">Aufzug defekt</h1>
+    <!-- Action Bar -->
+    <div class="bar floating-action-bar">
+      <!-- Show Description if data is provided -->
+      <template v-if="data">
+        <button @click="$emit('close')" class="close-button">x</button>
+        <div class="bar--content">
+          <!-- Header Section -->
+          <h1 v-if="isStation">Haltestelle {{ data.properties.Name }}</h1>
+          <h1 v-else-if="isStairs">Rolltreppe defekt</h1>
+          <h1 v-else-if="isElevator">Aufzug defekt</h1>
 
-      <!-- Details Section -->
-      <template v-if="!data.type.isStation">
-        <h3>{{ replaceAllSpecialChars(data.properties.Bezeichnung) }}</h3>
-        <p>zuletzt aktualisiert: {{ formatDate(data.properties.timestamp) }}</p>
+          <!-- Details Section -->
+          <template v-if="!isStation">
+            <h3>{{ replaceAllSpecialChars(data.properties.Bezeichnung) }}</h3>
+            <p>zuletzt aktualisiert: {{ formatDate(data.properties.timestamp) }}</p>
+          </template>
+
+          <!-- Description Section -->
+          <template v-else>
+            <h3>{{ data.properties.Name }}</h3>
+            <p v-if="data.hasDisorder" class="description call-out">
+              An dieser Haltestelle gibt es Störungen an {{ totalNumberOfDisorders }} Rolltreppen
+              und / oder Aufzügen. Klicken Sie <a href="#disorders">hier</a> für mehr Informationen.
+            </p>
+            <p>Hier fahren die Linien: {{ data.properties.Linien.replaceAll(' ', ', ') }}</p>
+          </template>
+
+          <div v-if="data.hasDisorder" class="chevron-down">
+            <a href="#disorders" class="chevron-svg"
+              ><img src="@/assets/icons/down-chevron.svg" alt=""
+            /></a>
+          </div>
+        </div>
+        <!-- Disorder Box -->
+        <div class="disorder-box--wrapper" id="disorders">
+          <div v-for="disorder in data.disorders" :key="disorder.id" class="disorder-box">
+            <img :src="getIconSrc(disorder.type)" alt="" class="disorder-box--icon" />
+            <div class="disorder-box--content">
+              <h3 v-if="disorder.type.isStairs" class="disorder-box--title">
+                Rolltreppe
+                {{ disorder.properties.Bezeichnung }} defekt
+              </h3>
+              <h3 v-else-if="disorder.type.isElevator" class="disorder-box--title">
+                Aufzug {{ disorder.properties.Bezeichnung }} defekt
+              </h3>
+              <!-- <p class="disorder-box--text">{{ disorder.properties.Bezeichnung }}</p> -->
+              <p class="disorder-box--text">
+                zuletzt aktualisiert: {{ formatDate(disorder.properties.timestamp) }}
+              </p>
+            </div>
+          </div>
+        </div>
       </template>
 
-      <!-- Description Section -->
+      <!-- Show Welcome Text if no data is provided -->
       <template v-else>
-        <h3>{{ replaceAllSpecialChars(data.properties.Name) }}</h3>
-        <p v-if="data.hasDisorder" class="description">
-          An dieser Haltestelle gibt es Störungen an Rolltreppen und / oder Aufzügen. Klicken Sie
-          auf die Haltestelle um mehr Informationen zu erhalten
-        </p>
-        <p>Hier fahren die Linien: {{ data.properties.Linien.replaceAll(' ', ', ') }}</p>
+        <p>{{ welcomeText }}</p>
       </template>
     </div>
   </div>
@@ -35,16 +69,48 @@ export default {
       type: Object,
       required: false,
     },
+    welcomeText: {
+      type: String,
+      required: false,
+    },
+    numberOfDisorders: {
+      type: Number,
+      required: false,
+      default: 0,
+    },
+    disorder: {
+      type: Object,
+      required: false,
+    },
   },
+  data() {
+    return {
+      iconPath: '',
+    }
+  },
+
   mounted() {
-    console.log(this.fixEncoding('Haltestelle Ã¶ffnet Ã¼bermorgen'))
+    // console.log(this.fixEncoding('Haltestelle Ã¶ffnet Ã¼bermorgen'))
     // Expected output: "Haltestelle öffnet übermorgen"
+  },
+  computed: {
+    isStation() {
+      return this.data?.type?.isStation
+    },
+    isStairs() {
+      return this.data?.type?.isStairs
+    },
+    isElevator() {
+      return this.data?.type?.isElevator
+    },
+    totalNumberOfDisorders() {
+      return this.data?.disorders?.length || 0
+    },
   },
   methods: {
     formatDate(date) {
       return new Date(date).toLocaleString('de-DE')
     },
-    // function to fix special chars (ß, ä, ö, ü) in the Linien property
     replaceAllSpecialChars(str) {
       if (!str) return ''
       return str
@@ -53,17 +119,24 @@ export default {
         .replaceAll('Ã¤', 'ä')
         .replaceAll('ÃŸ', 'ß')
     },
-    fixEncoding(str) {
-      if (!str) return ''
-
-      // Decode Latin-1 misinterpreted as UTF-8
-      return decodeURIComponent(escape(str))
+    getIconSrc(type) {
+      console.log(type)
+      if (type.isStairs) {
+        this.iconPath = 'src/assets/icons/escalator.png'
+      }
+      if (type.isElevator) {
+        this.iconPath = 'src/assets/icons/elevator.png'
+      }
+      return this.iconPath
     },
   },
 }
 </script>
 
 <style scoped>
+/* import /assets/css/animation.css */
+@import url('@/assets/css/animation.css');
+
 .bar {
   position: fixed;
   bottom: 0;
@@ -71,35 +144,171 @@ export default {
   transform: translateX(-50%);
   z-index: 1000;
   margin: 0 auto;
-  min-width: 100vw;
-  max-width: 100vw;
-  border-top: 1px solid #fff;
-  background: #000000c4;
-  backdrop-filter: blur(20px);
-  opacity: 0.8;
+  width: 100vw;
+  max-height: 35vh;
+  border-top: 1px solid #444;
+  background: rgba(0, 0, 0, 0.85);
+  backdrop-filter: blur(15px);
+  opacity: 0.95;
   transition: all 0.3s ease-out;
   color: white;
+  overflow-y: auto;
+  box-shadow: 0 -5px 10px rgba(0, 0, 0, 0.7);
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+
+  /* remove scroll bar */
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+
+  /* remove scroll bar for Chrome */
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+.bar--content {
+  min-height: 35vh;
 }
 
 .floating-action-bar {
   display: flex;
-  justify-content: center;
+  justify-content: flex-start;
   align-items: center;
   flex-direction: column;
   text-align: center;
-
-  padding: 2.5rem;
+  padding: 1.5rem;
 }
 
 .bar:hover {
   opacity: 1;
 }
 
-.description {
-  font-size: 0.9rem;
-  text-align: justify;
+.call-out {
+  background: rgba(255, 0, 0, 0.1);
+  border: 1px solid rgba(255, 0, 0, 0.3);
+  padding: 1rem;
+  border-radius: 0.75rem;
+  width: 80%;
+  margin: 1rem auto;
+}
+
+.disorder-box {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  padding: 0.5rem 0.25rem;
+  margin: 0.5rem;
+  border-radius: 0.75rem;
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(10px);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
   width: 100%;
-  opacity: 0.9;
-  max-width: 60%;
+  /* overflow: hidden; */
+  white-space: normal;
+  transition: all 0.3s ease;
+}
+
+.disorder-box--wrapper {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 80%;
+  margin: 1rem auto;
+}
+
+.disorder-box:hover {
+  background: rgba(255, 255, 255, 0.1);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.5);
+}
+
+.disorder-box--icon {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background: rgb(255, 255, 255);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.5rem;
+  position: absolute;
+  top: -20%;
+  left: 50%;
+  transform: translateX(-50%);
+  transition: all 0.3s ease;
+
+  &:hover {
+    /* aurora shadow effect */
+    box-shadow:
+      0 0 40px rgba(255, 0, 0, 0.9),
+      0 0 60px rgba(255, 255, 255, 0.6);
+  }
+}
+
+.disorder-box--icon img {
+  width: 80%;
+  height: 80%;
+  object-fit: contain;
+}
+
+.disorder-box--content {
+  flex: 1;
+  text-align: left;
+  font-size: 1rem;
+  line-height: 1.5;
+  color: rgba(255, 255, 255, 0.9);
+  padding: 0.5rem;
+}
+
+.disorder-box--title {
+  font-size: 1rem;
+  font-weight: bold;
+  margin-bottom: 0.5rem;
+  color: #34dbc8;
+  text-align: center;
+  margin-top: 1.5rem;
+}
+
+.disorder-box--text {
+  font-size: 0.75rem;
+  margin: 0;
+  opacity: 0.8;
+  transition: all 0.3s ease;
+  text-align: center;
+  &:hover {
+    opacity: 1;
+  }
+}
+
+.chevron-svg {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: all 0.3s ease;
+
+  &:hover {
+    transform: scale(2);
+    background: none;
+  }
+}
+
+.close-button {
+  position: absolute;
+  top: 0;
+  right: 0;
+  padding: 1rem;
+  font-size: 1.5rem;
+  background: none;
+  color: white;
+  border: none;
+  cursor: pointer;
+  transition: all 0.3s ease;
+
+  &:hover {
+    color: #34dbc8;
+  }
 }
 </style>

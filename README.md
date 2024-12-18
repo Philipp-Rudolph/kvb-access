@@ -33,4 +33,13 @@ npm run build
 ```sh
 npm run lint
 ```
+
 # kvb-access
+
+## Docker Setup
+
+This app runs with Docker and Docker Compose. To launch the app simply use
+
+```sh
+docker-compose up --build
+```

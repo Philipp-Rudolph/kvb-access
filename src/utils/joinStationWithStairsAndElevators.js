@@ -16,24 +16,26 @@ function joinStationWithStairsAndElevators(
   const findStationByKurzname = (Kurzname) => {
     return stationData.find((station) => station.properties.kurzname === Kurzname)
   }
+  const findDisorders = (station) => {
+    if (!station) return false
 
-  const findStationWithDisorder = (station) => {
-    if (
-      stairsData.find(
+    // Find all stairs with disorder and add type
+    const stairDisorders = stairsData
+      .filter(
         (stair) => stair.properties.Haltestellenbereich === station.properties.Haltestellenbereich,
       )
-    ) {
-      return true
-    }
-    if (
-      elevatorData.find(
+      .map((stair) => ({ ...stair, type: { isStairs: true } })) // Attach type: { isStairs: true }
+
+    // Find all elevators with disorder and add type
+    const elevatorDisorders = elevatorData
+      .filter(
         (elevator) =>
           elevator.properties.Haltestellenbereich === station.properties.Haltestellenbereich,
       )
-    ) {
-      return true
-    }
-    return false
+      .map((elevator) => ({ ...elevator, type: { isElevator: true } })) // Attach type: { isElevator: true }
+
+    // Combine both types of disorders
+    return [...stairDisorders, ...elevatorDisorders]
   }
 
   const filterOutBusStations = (stations) => {
@@ -73,13 +75,17 @@ function joinStationWithStairsAndElevators(
 
   // Merge Station Location Data with corresponding Station Data
   let mergedStationLocationData = stationLocationData.map((location) => {
-    let station = findStationByKurzname(location.properties.Kurzname)
+    const station = findStationByKurzname(location.properties.Kurzname)
+
+    // Get all disorders related to this station
+    const disorders = station ? findDisorders(station) : []
 
     return {
       ...location,
       stationInfo: station ? station.properties : null,
       type: 'station',
-      hasDisorder: findStationWithDisorder(station),
+      disorders, // Append all disorders with their types
+      hasDisorder: disorders.length > 0, // Boolean flag if there are any disorders
     }
   })
 
