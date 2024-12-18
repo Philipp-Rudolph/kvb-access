@@ -3,19 +3,26 @@ const fetchData = async (url) => {
     const response = await fetch(url, {
       method: 'GET',
       headers: {
-        'Content-Type': 'application/json',
-        'Accept-Charset': 'utf-8', // Ensure UTF-8 encoding
+        Accept: 'application/json', // Request JSON format
       },
     })
 
-    // Handle the response as text and decode with UTF-8
-    const text = await response.text()
-    const decodedText = new TextDecoder('utf-8').decode(new TextEncoder().encode(text))
-    const data = JSON.parse(decodedText)
+    // Fetch raw binary data
+    const buffer = await response.arrayBuffer()
+
+    const text = new TextDecoder('iso-8859-2').decode(buffer)
+
+    // Parse JSON or repair if necessary
+    let data
+    try {
+      data = JSON.parse(text)
+    } catch (e) {
+      console.error('JSON Parsing Error:', e)
+    }
 
     return data
   } catch (error) {
-    console.error('Fetch Error: ', error)
+    console.error('Fetch Error:', error)
   }
 }
 
