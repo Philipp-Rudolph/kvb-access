@@ -4,25 +4,42 @@
     <div class="bar floating-action-bar">
       <!-- Show Description if data is provided -->
       <template v-if="data">
-        <button @click="$emit('close')" class="close-button">x</button>
+        <button @click="$emit('close')" class="close-button">
+          <img src="@/assets/icons/close.png" alt="" />
+        </button>
         <div class="bar--content">
           <!-- Header Section -->
           <h1 v-if="isStation">Haltestelle {{ data.properties.Name }}</h1>
+
           <h1 v-else-if="isStairs">Rolltreppe defekt</h1>
           <h1 v-else-if="isElevator">Aufzug defekt</h1>
 
           <!-- Details Section -->
           <template v-if="!isStation">
-            <h3>{{ replaceAllSpecialChars(data.properties.Bezeichnung) }}</h3>
+            <p class="description call-out call-out--alert">
+              {{ isStairs ? 'Diese Rolltreppe' : 'Dieser Aufzug' }}
+              {{ data.properties.Bezeichnung }} ist defekt
+            </p>
             <p>zuletzt aktualisiert: {{ formatDate(data.properties.timestamp) }}</p>
           </template>
 
           <!-- Description Section -->
           <template v-else>
-            <p v-if="data.hasDisorder" class="description call-out">
+            <p v-if="data.hasDisorder" class="description call-out call-out--alert">
               An dieser Haltestelle gibt es Störungen an {{ totalNumberOfDisorders }} Rolltreppen
               und / oder Aufzügen. Klicken Sie <a href="#disorders">hier</a> für mehr Informationen.
+              <br />
+              <br />
+              <span>
+                Laden Sie<a :href="data.stationInfo.Lageplan">hier</a> den Lageplan der Haltestelle
+                runter, um eine alternative Route zu finden
+              </span>
             </p>
+            <!-- <p class="description call-out call-out--info">
+              Laden Sie
+              <a :href="data.stationInfo.Lageplan">hier</a> den Lageplan der Haltestelle runter, um
+              eine alternative Route zu finden
+            </p> -->
             <p>Hier fahren die Linien: {{ data.properties.Linien.replaceAll(' ', ', ') }}</p>
           </template>
 
@@ -187,11 +204,24 @@ export default {
 
 .call-out {
   background: rgba(255, 0, 0, 0.1);
-  border: 1px solid rgba(255, 0, 0, 0.3);
   padding: 1rem;
   border-radius: 0.75rem;
-  width: 80%;
+  width: 100%;
   margin: 1rem auto;
+
+  & > span {
+    color: rgb(201, 199, 199);
+  }
+}
+
+.call-out--info {
+  background: rgba(184, 184, 184, 0.1);
+  color: #34dbc8;
+}
+
+.call-out--alert {
+  background: rgba(255, 0, 0, 0.1);
+  border: 1px solid rgba(255, 0, 0, 0.3);
 }
 
 .disorder-box {
@@ -296,7 +326,7 @@ export default {
 
 .close-button {
   position: absolute;
-  top: 0;
+  top: -5px;
   right: 0;
   padding: 1rem;
   font-size: 1.5rem;
@@ -305,9 +335,19 @@ export default {
   border: none;
   cursor: pointer;
   transition: all 0.3s ease;
+  border: 1px solid transparent;
+
+  & > img {
+    height: 15px;
+    width: 15px;
+    filter: invert(1);
+    object-fit: cover;
+  }
 
   &:hover {
     color: #34dbc8;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 5px;
   }
 }
 </style>
