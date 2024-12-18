@@ -19,7 +19,6 @@
 
           <!-- Description Section -->
           <template v-else>
-            <h3>{{ data.properties.Name }}</h3>
             <p v-if="data.hasDisorder" class="description call-out">
               An dieser Haltestelle gibt es Störungen an {{ totalNumberOfDisorders }} Rolltreppen
               und / oder Aufzügen. Klicken Sie <a href="#disorders">hier</a> für mehr Informationen.
