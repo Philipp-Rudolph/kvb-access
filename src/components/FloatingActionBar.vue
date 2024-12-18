@@ -170,7 +170,7 @@ export default {
 }
 
 .bar--content {
-  min-height: 35vh;
+  margin-bottom: 1rem;
 }
 
 .floating-action-bar {
