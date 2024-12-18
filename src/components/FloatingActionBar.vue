@@ -4,7 +4,7 @@
     <div class="bar floating-action-bar">
       <!-- Show Description if data is provided -->
       <template v-if="data">
-        <button @click="$emit('close')" class="close-button">close</button>
+        <button @click="$emit('close')" class="close-button">x</button>
         <div class="bar--content">
           <!-- Header Section -->
           <h1 v-if="isStation">Haltestelle {{ data.properties.Name }}</h1>
@@ -27,7 +27,7 @@
             <p>Hier fahren die Linien: {{ data.properties.Linien.replaceAll(' ', ', ') }}</p>
           </template>
 
-          <div class="chevron-down">
+          <div v-if="data.hasDisorder" class="chevron-down">
             <a href="#disorders" class="chevron-svg"
               ><img src="@/assets/icons/down-chevron.svg" alt=""
             /></a>
@@ -38,11 +38,14 @@
           <div v-for="disorder in data.disorders" :key="disorder.id" class="disorder-box">
             <img :src="getIconSrc(disorder.type)" alt="" class="disorder-box--icon" />
             <div class="disorder-box--content">
-              <h3 v-if="disorder.type.isStairs" class="disorder-box--title">Rolltreppe defekt</h3>
-              <h3 v-else-if="disorder.type.isElevator" class="disorder-box--title">
-                Aufzug defekt
+              <h3 v-if="disorder.type.isStairs" class="disorder-box--title">
+                Rolltreppe
+                {{ disorder.properties.Bezeichnung }} defekt
               </h3>
-              <p class="disorder-box--text">{{ disorder.properties.Bezeichnung }}</p>
+              <h3 v-else-if="disorder.type.isElevator" class="disorder-box--title">
+                Aufzug {{ disorder.properties.Bezeichnung }} defekt
+              </h3>
+              <!-- <p class="disorder-box--text">{{ disorder.properties.Bezeichnung }}</p> -->
               <p class="disorder-box--text">
                 zuletzt aktualisiert: {{ formatDate(disorder.properties.timestamp) }}
               </p>
@@ -131,6 +134,9 @@ export default {
 </script>
 
 <style scoped>
+/* import /assets/css/animation.css */
+@import url('@/assets/css/animation.css');
+
 .bar {
   position: fixed;
   bottom: 0;
@@ -152,6 +158,15 @@ export default {
   flex-direction: column;
   justify-content: flex-start;
   align-items: center;
+
+  /* remove scroll bar */
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+
+  /* remove scroll bar for Chrome */
+  &::-webkit-scrollbar {
+    display: none;
+  }
 }
 
 .bar--content {
@@ -175,34 +190,34 @@ export default {
   background: rgba(255, 0, 0, 0.1);
   border: 1px solid rgba(255, 0, 0, 0.3);
   padding: 1rem;
-  margin: 1rem 0;
   border-radius: 0.75rem;
+  width: 80%;
+  margin: 1rem auto;
 }
 
 .disorder-box {
   display: flex;
   justify-content: flex-start;
-  gap: 1.5rem;
   align-items: center;
-  border: 1px solid rgba(255, 255, 255, 0.3);
-  padding: 1rem 2rem;
-  margin: 1rem 0;
+  padding: 0.5rem 0.25rem;
+  margin: 0.5rem;
   border-radius: 0.75rem;
   background: rgba(255, 255, 255, 0.05);
   backdrop-filter: blur(10px);
-  transition: all 0.3s ease;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
-  min-width: 30vw;
-  max-width: 30vw;
+  width: 100%;
+  /* overflow: hidden; */
+  white-space: normal;
+  transition: all 0.3s ease;
 }
 
 .disorder-box--wrapper {
   display: flex;
-  flex-direction: row;
-  flex-wrap: wrap;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
-  gap: 1rem;
+  width: 80%;
+  margin: 1rem auto;
 }
 
 .disorder-box:hover {
@@ -211,15 +226,26 @@ export default {
 }
 
 .disorder-box--icon {
-  filter: invert(1);
-  width: 60px;
-  height: 60px;
+  width: 50px;
+  height: 50px;
   border-radius: 50%;
-  background: rgba(255, 255, 255, 0.2);
+  background: rgb(255, 255, 255);
   display: flex;
   align-items: center;
   justify-content: center;
   padding: 0.5rem;
+  position: absolute;
+  top: -20%;
+  left: 50%;
+  transform: translateX(-50%);
+  transition: all 0.3s ease;
+
+  &:hover {
+    /* aurora shadow effect */
+    box-shadow:
+      0 0 40px rgba(255, 0, 0, 0.9),
+      0 0 60px rgba(255, 255, 255, 0.6);
+  }
 }
 
 .disorder-box--icon img {
@@ -234,18 +260,27 @@ export default {
   font-size: 1rem;
   line-height: 1.5;
   color: rgba(255, 255, 255, 0.9);
+  padding: 0.5rem;
 }
 
 .disorder-box--title {
-  font-size: 1.25rem;
+  font-size: 1rem;
   font-weight: bold;
   margin-bottom: 0.5rem;
   color: #34dbc8;
+  text-align: center;
+  margin-top: 1.5rem;
 }
 
 .disorder-box--text {
-  font-size: 0.95rem;
+  font-size: 0.75rem;
+  margin: 0;
   opacity: 0.8;
+  transition: all 0.3s ease;
+  text-align: center;
+  &:hover {
+    opacity: 1;
+  }
 }
 
 .chevron-svg {
@@ -255,7 +290,7 @@ export default {
   transition: all 0.3s ease;
 
   &:hover {
-    transform: scale(1.1);
+    transform: scale(2);
     background: none;
   }
 }
