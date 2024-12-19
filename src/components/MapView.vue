@@ -1,6 +1,8 @@
 <template>
   <div ref="mapContainer" id="map"></div>
 
+  <SearchBar v-if="!isLoading" :data="searchBarData" @selectStation="handleStationSelect" />
+
   <!-- Show Description Bar if a marker is selected -->
   <FloatingActionBar
     v-if="isMarkerSelected"
@@ -11,7 +13,7 @@
   <!-- Show Welcome Bar if no marker is selected -->
   <FloatingActionBar
     v-else
-    :welcomeText="`Willkommen zur KVB Störungsmeldung! Klicken Sie auf eine Haltestelle, um mehr Informationen zu erhalten`"
+    :welcomeText="`Willkommen zur KVB Störungsmeldung! Klicken Sie auf eine Haltestelle oder nutzen Sie die Suchfunktion, um mehr Informationen zu erhalten`"
     @close="closeMarkerSelection"
   />
 
@@ -26,17 +28,8 @@ import fetchData from '/src/utils/fetchData'
 import joinStationWithStairsAndElevators from '@/utils/joinStationWithStairsAndElevators'
 import FloatingActionBar from './FloatingActionBar.vue'
 import LoadingView from './LoadingView.vue'
+import SearchBar from './SearchBar.vue'
 import { MarkerTypes } from '/src/types/MarkerTypes'
-
-// const BASE_URL = 'http://localhost:3000/'
-// const BASE_URL = 'https://data.webservice-kvb.koeln/service/opendata'
-
-// const DATA_URLS = {
-//   STAIRS: `${BASE_URL}stairs.json`,
-//   ELEVATORS: `${BASE_URL}elevators.json`,
-//   STATIONS: `${BASE_URL}stations.json`,
-//   STATION_LOCATIONS: `${BASE_URL}stations-location.json`,
-// }
 
 const DATA_URLS = {
   STAIRS: `/api/fahrtreppenstoerung/json`,
@@ -60,11 +53,13 @@ export default {
       map: null,
       markerCluster: null,
       isLoading: true,
+      searchBarData: [],
     }
   },
   components: {
     FloatingActionBar,
     LoadingView,
+    SearchBar,
   },
   async mounted() {
     const [stairsData, elevatorsData, stationsData, stationLocations] = await Promise.all(
@@ -79,6 +74,13 @@ export default {
       stairsData.features,
       elevatorsData.features,
     )
+
+    // Prepare data for SearchBar
+    this.searchBarData = [
+      ...mergedData.mergedStationLocationData.map((item) => ({
+        item: item,
+      })),
+    ]
 
     this.mapIcons = {
       stairs: setupMap.createIcon('/src/assets/icons/escalator.png'),
@@ -174,6 +176,22 @@ export default {
       this.map.on('zoomend', () => {
         updateMarkersVisibility()
       })
+    },
+
+    // Handle marker select from search bar
+    async handleStationSelect(station) {
+      const resolvedMarkers = await this.markers.stations
+
+      const marker = await resolvedMarkers.find((m) => {
+        return station.item.stationInfo.Haltestellenbereich === m._icon.id
+      })
+
+      if (marker) {
+        this.map.setView(marker.getLatLng(), 16)
+        this.handleMarkerClick(station.item, { type: { isStation: true } })
+        marker.openPopup()
+        marker._icon.style.opacity = 1
+      }
     },
 
     handleMarkerClick(markerData, typeData) {
