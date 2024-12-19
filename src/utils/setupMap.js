@@ -59,6 +59,7 @@ const setupMap = {
         type,
       }).addTo(this.map)
 
+      // Add custom class to marker for stations with disorders
       L.DomUtil.addClass(marker._icon, `${type}-marker`)
       if (item.hasDisorder || type === 'stairs' || type === 'elevator') {
         L.DomUtil.addClass(marker._icon, 'disorder')
@@ -68,6 +69,7 @@ const setupMap = {
         L.DomUtil.removeClass(marker._icon, 'disorder')
       }
 
+      // Add click event to marker
       marker.on('click', () => {
         if (onClickCallback) {
           onClickCallback(item)
@@ -76,11 +78,13 @@ const setupMap = {
         console.log(marker)
       })
 
+      // Add popup to marker
       if (type === 'station') {
         marker.bindPopup(`<b>${item.stationInfo.Haltestellenname}</b>`, {
           permanent: true,
           direction: 'top',
         })
+        marker._icon.id = item.stationInfo.Haltestellenbereich
       }
 
       // if (type !== 'station') {

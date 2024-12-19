@@ -136,7 +136,6 @@ export default {
         .replaceAll('ÃŸ', 'ß')
     },
     getIconSrc(type) {
-      console.log(type)
       if (type.isStairs) {
         this.iconPath = 'src/assets/icons/escalator.png'
       }
