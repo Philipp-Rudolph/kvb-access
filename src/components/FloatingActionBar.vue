@@ -73,7 +73,7 @@
       <!-- Show Welcome Text if no data is provided -->
       <template v-else>
         <p>{{ welcomeText }}</p>
-        <p>{{ subText }}</p>
+        <p class="description call-out call-out--alert">{{ subText }}</p>
       </template>
     </div>
   </div>
@@ -210,7 +210,7 @@ export default {
   background: rgba(255, 0, 0, 0.1);
   padding: 1rem;
   border-radius: 0.75rem;
-  width: 100%;
+  width: fit-content;
   margin: 1rem auto;
 
   & > span {
