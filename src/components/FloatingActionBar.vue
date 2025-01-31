@@ -73,6 +73,7 @@
       <!-- Show Welcome Text if no data is provided -->
       <template v-else>
         <p>{{ welcomeText }}</p>
+        <p>{{ subText }}</p>
       </template>
     </div>
   </div>
@@ -86,6 +87,10 @@ export default {
       required: false,
     },
     welcomeText: {
+      type: String,
+      required: false,
+    },
+    subText: {
       type: String,
       required: false,
     },

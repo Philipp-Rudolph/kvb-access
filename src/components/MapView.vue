@@ -13,7 +13,8 @@
   <!-- Show Welcome Bar if no marker is selected -->
   <FloatingActionBar
     v-else
-    :welcomeText="`Willkommen zur KVB Störungsmeldung! Klicken Sie auf eine Haltestelle oder nutzen Sie die Suchfunktion, um mehr Informationen zu erhalten`"
+    welcomeText="Willkommen zur KVB Störungsmeldung! Klicken Sie auf eine Haltestelle oder nutzen Sie die Suchfunktion, um mehr Informationen zu erhalten."
+    :subText="subText"
     @close="closeMarkerSelection"
   />
 
@@ -54,6 +55,7 @@ export default {
       markerCluster: null,
       isLoading: true,
       searchBarData: [],
+      subText: '',
     }
   },
   components: {
@@ -114,8 +116,12 @@ export default {
       )
     }
     this.attachZoomListener()
+
+    const subText = `Es gibt aktuell ${
+      mergedData.mergedStairsData.length
+    } Störungen an Fahrtreppen und ${mergedData.mergedElevatorData.length} Störungen an Aufzügen.`
+    this.subText = subText
   },
-  computed() {},
   methods: {
     setupMarkers(stairs, elevators, stations) {
       this.markers.stairs = setupMap.addMarkers(
