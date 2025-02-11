@@ -1,60 +1,76 @@
 <!doctype html>
-<html lang="">
+<html lang="de">
+  <!-- Sprache für SEO & Screenreader -->
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" href="/favicon.ico" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>KVB Access – Barrierefreie Routenplanung für Köln</title>
-    <link rel="stylesheet" href="//unpkg.com/leaflet/dist/leaflet.css" />
-    <script src="//unpkg.com/leaflet/dist/leaflet.js"></script>
-    <script src="//unpkg.com/vue2-leaflet"></script>
-    <script
-      defer
-      src="https://cloud.umami.is/script.js"
-      data-website-id="08139a6d-8128-4211-9b4e-ae663c030858"
-    ></script>
 
-    <!-- SEO Optimierung -->
+    <title>KVB Access – Barrierefreie Routenplanung für Köln</title>
+
     <meta
       name="description"
-      content="Finde defekte Rolltreppen und Aufzüge an KVB-Haltestellen in Köln – für eine barrierefreie Routenplanung."
+      content="Plane deine Route barrierefrei: Erfahre, welche Rolltreppen und Aufzüge an KVB-Haltestellen in Köln außer Betrieb sind."
     />
     <meta
       name="keywords"
-      content="KVB, Barrierefreiheit, Rolltreppen, Aufzüge, Köln, Mobilität, Haltestellen"
+      content="KVB, Barrierefreiheit, Rolltreppen Störung, Aufzüge defekt, Köln, Mobilitätseinschränkungen, öffentliche Verkehrsmittel"
     />
     <meta name="author" content="KVB Access" />
     <meta name="robots" content="index, follow" />
 
-    <meta property="og:title" content="KVB Access – Defekte Aufzüge & Rolltreppen in Köln" />
+    <!-- Open Graph für Social Media -->
+    <meta property="og:title" content="KVB Access – Barrierefreie Routenplanung für Köln" />
     <meta
       property="og:description"
-      content="Plane deine Route barrierefrei: Defekte Rolltreppen und Aufzüge an KVB-Haltestellen in Köln auf einen Blick."
+      content="Live-Status von Rolltreppen & Aufzügen an KVB-Haltestellen. Plane deine Route barrierefrei und sicher!"
     />
     <meta property="og:url" content="https://www.kvb-access.de" />
     <meta property="og:type" content="website" />
-    <meta name="twitter:title" content="KVB Access – Defekte Aufzüge & Rolltreppen in Köln" />
+    <meta property="og:image" content="https://www.kvb-access.de/preview.jpg" />
+    <!-- Beispiel-Bild ergänzen -->
+
+    <!-- Twitter Cards -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="KVB Access – Barrierefreie Routenplanung für Köln" />
     <meta
       name="twitter:description"
-      content="Plane deine Route barrierefrei: Defekte Rolltreppen und Aufzüge an KVB-Haltestellen in Köln auf einen Blick."
+      content="Live-Status defekter Rolltreppen & Aufzüge an KVB-Haltestellen. Jetzt deine Route barrierefrei planen!"
     />
+    <meta name="twitter:image" content="https://www.kvb-access.de/preview.jpg" />
+    <!-- Beispiel-Bild ergänzen -->
 
+    <!-- Strukturierte Daten für Google -->
     <script type="application/ld+json">
       {
         "@context": "https://schema.org",
         "@type": "WebSite",
         "name": "KVB Access",
         "url": "https://www.kvb-access.de",
-        "description": "Barrierefreie Routenplanung für Köln: Finde defekte Rolltreppen und Aufzüge an KVB-Haltestellen.",
+        "description": "Live-Status defekter Rolltreppen und Aufzüge an KVB-Haltestellen in Köln. Hilft Menschen mit Mobilitätseinschränkungen bei der Routenplanung.",
         "author": {
           "@type": "Organization",
           "name": "KVB Access"
         }
       }
     </script>
+
+    <!-- Stylesheets & Scripte -->
+    <link rel="stylesheet" href="//unpkg.com/leaflet/dist/leaflet.css" />
+    <link rel="icon" href="/favicon.ico" />
+
+    <script src="//unpkg.com/leaflet/dist/leaflet.js"></script>
+    <script src="//unpkg.com/vue2-leaflet"></script>
+
+    <!-- Tracking (optional) -->
+    <script
+      defer
+      src="https://cloud.umami.is/script.js"
+      data-website-id="08139a6d-8128-4211-9b4e-ae663c030858"
+    ></script>
   </head>
   <body>
-    <div id="app"></div>
+    <div id="app" aria-label="KVB Access – Status von Rolltreppen und Aufzügen"></div>
+    <!-- Barrierefreiheit -->
     <script type="module" src="/src/main.js"></script>
   </body>
 </html>

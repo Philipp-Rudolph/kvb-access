@@ -13,7 +13,7 @@
   <!-- Show Welcome Bar if no marker is selected -->
   <FloatingActionBar
     v-else
-    welcomeText="Willkommen zur KVB Störungsmeldung! Klicken Sie auf eine Haltestelle oder nutzen Sie die Suchfunktion, um mehr Informationen zu erhalten."
+    welcomeText="Deiner Plattform für barrierefreies Reisen in Köln! Hier findest du aktuelle Störungen von Rolltreppen und Aufzügen an KVB-Haltestellen, um deine Route optimal zu planen. Klicke auf eine Haltestelle oder nutze die Suchfunktion, um herauszufinden, welche Stationen uneingeschränkt zugänglich sind."
     :subText="subText"
     @close="closeMarkerSelection"
   />
