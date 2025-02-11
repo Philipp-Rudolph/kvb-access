@@ -77,8 +77,11 @@
 
       <!-- Show Welcome Text if no data is provided -->
       <template v-else>
-        <p>{{ welcomeText }}</p>
-        <p class="description call-out call-out--alert">{{ subText }}</p>
+        <div class="welcome-message">
+          <h1>Barrierefreie Routenplanung für Köln - Willkommen bei KVB Access</h1>
+          <p>{{ welcomeText }}</p>
+          <p class="description call-out call-out--alert">{{ subText }}</p>
+        </div>
       </template>
     </div>
   </div>
@@ -191,6 +194,10 @@ export default {
   /* remove scroll bar for Chrome */
   &::-webkit-scrollbar {
     display: none;
+  }
+
+  & > .welcome-message {
+    max-width: 1200px;
   }
 }
 
