@@ -31,8 +31,13 @@
               <br />
               <br />
               <span>
-                Laden Sie<a :href="data.stationInfo.Lageplan">hier</a> den Lageplan der Haltestelle
-                runter, um eine alternative Route zu finden
+                Laden Sie<a
+                  :href="data.stationInfo.Lageplan"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  >hier</a
+                >
+                den Lageplan der Haltestelle runter, um eine alternative Route zu finden
               </span>
             </p>
             <!-- <p class="description call-out call-out--info">
