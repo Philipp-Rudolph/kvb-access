@@ -5,7 +5,7 @@
       <div class="loading-spinner">
         <div class="loading-spinner-inner"></div>
       </div>
-      <p>please stand by, while I fetch the data 🙂‍↕️</p>
+      <p>{{ message }}</p>
     </div>
   </div>
 </template>
@@ -15,6 +15,13 @@ export default {
   name: 'LoadingView',
   data() {
     return {}
+  },
+  props: {
+    message: {
+      required: false,
+      type: String,
+      default: 'please stand by, while I fetch the data 🙂‍↕️',
+    },
   },
   methods: {},
   mounted() {},

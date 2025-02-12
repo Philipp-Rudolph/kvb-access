@@ -1,24 +1,30 @@
 <template>
   <div ref="mapContainer" id="map"></div>
 
-  <SearchBar v-if="!isLoading" :data="searchBarData" @selectStation="handleStationSelect" />
-
-  <!-- Show Description Bar if a marker is selected -->
-  <FloatingActionBar
-    v-if="isMarkerSelected"
-    :data="selectedMarkerData"
-    @close="closeMarkerSelection"
-  />
-
-  <!-- Show Welcome Bar if no marker is selected -->
-  <FloatingActionBar
-    v-else
-    welcomeText="Deiner Plattform für barrierefreies Reisen in Köln! Hier findest du aktuelle Störungen von Rolltreppen und Aufzügen an KVB-Haltestellen, um deine Route optimal zu planen. Klicke auf eine Haltestelle oder nutze die Suchfunktion, um herauszufinden, welche Stationen uneingeschränkt zugänglich sind."
-    :subText="subText"
-    @close="closeMarkerSelection"
-  />
-
+  <!-- Show loading screen while fetching data -->
   <LoadingView v-if="isLoading" />
+
+  <!-- Show "No Data Available" message if loading is complete but no data exists -->
+  <LoadingView v-else-if="!hasData" message="Sorry, no data available. Please try again later." />
+
+  <template v-else>
+    <SearchBar :data="searchBarData" @selectStation="handleStationSelect" />
+
+    <!-- Show Description Bar if a marker is selected -->
+    <FloatingActionBar
+      v-if="isMarkerSelected"
+      :data="selectedMarkerData"
+      @close="closeMarkerSelection"
+    />
+
+    <!-- Show Welcome Bar if no marker is selected -->
+    <FloatingActionBar
+      v-else
+      welcomeText="Deiner Plattform für barrierefreies Reisen in Köln! Hier findest du aktuelle Störungen von Rolltreppen und Aufzügen an KVB-Haltestellen, um deine Route optimal zu planen. Klicke auf eine Haltestelle oder nutze die Suchfunktion, um herauszufinden, welche Stationen uneingeschränkt zugänglich sind."
+      :subText="subText"
+      @close="closeMarkerSelection"
+    />
+  </template>
 </template>
 
 <script>
@@ -47,9 +53,9 @@ export default {
       selectedMarkerData: null,
       mapIcons: {},
       markers: {
-        stairs: null,
-        elevators: null,
-        stations: null,
+        stairs: [],
+        elevators: [],
+        stations: [],
       },
       map: null,
       markerCluster: null,
@@ -63,69 +69,78 @@ export default {
     LoadingView,
     SearchBar,
   },
-  async mounted() {
-    const [stairsData, elevatorsData, stationsData, stationLocations] = await Promise.all(
-      Object.values(DATA_URLS).map(fetchData),
-    ).finally(() => {
-      this.isLoading = false
-    })
-
-    const mergedData = joinStationWithStairsAndElevators(
-      stationsData.features,
-      stationLocations.features,
-      stairsData.features,
-      elevatorsData.features,
-    )
-
-    // Prepare data for SearchBar
-    this.searchBarData = [
-      ...mergedData.mergedStationLocationData.map((item) => ({
-        item: item,
-      })),
-    ]
-
-    this.mapIcons = {
-      stairs: setupMap.createIcon('/src/assets/icons/escalator.png'),
-      elevators: setupMap.createIcon('/src/assets/icons/elevator.png'),
-      stations: setupMap.createIcon('/src/assets/icons/train.png'),
-    }
-
-    this.markerCluster = L.markerClusterGroup({
-      spiderfyOnMaxZoom: false,
-      showCoverageOnHover: false,
-      zoomToBoundsOnClick: true,
-      maxClusterRadius: (zoom) => (zoom < 10 ? 80 : zoom < 15 ? 50 : 25),
-      iconCreateFunction: function (cluster) {
-        const count = cluster.getChildCount()
-        return L.divIcon({
-          html: `<div class="cluster-marker">${count}</div>`,
-          className: 'cluster-marker disorder',
-          iconSize: [40, 40],
-        })
-      },
-      disableClusteringAtZoom: 10,
-    })
-
-    this.map = setupMap.init(this.$refs.mapContainer, this.markerCluster)
-
-    if (!this.isLoading) {
-      this.setupMarkers(
-        mergedData.mergedStairsData,
-        mergedData.mergedElevatorData,
-        mergedData.mergedStationLocationData,
+  computed: {
+    hasData() {
+      return (
+        this.markers.stairs.length > 0 ||
+        this.markers.elevators.length > 0 ||
+        this.markers.stations.length > 0
       )
-    }
-    this.attachZoomListener()
+    },
+  },
+  async mounted() {
+    try {
+      const [stairsData, elevatorsData, stationsData, stationLocations] = await Promise.all(
+        Object.values(DATA_URLS).map(fetchData),
+      )
 
-    const subText = `Es gibt aktuell ${
-      mergedData.mergedStairsData.length
-    } Störungen an Fahrtreppen und ${mergedData.mergedElevatorData.length} Störungen an Aufzügen.`
-    this.subText = subText
+      if (!stairsData || !elevatorsData || !stationsData || !stationLocations) {
+        throw new Error('Invalid or missing data')
+      }
+
+      const mergedData = joinStationWithStairsAndElevators(
+        stationsData.features || [],
+        stationLocations.features || [],
+        stairsData.features || [],
+        elevatorsData.features || [],
+      )
+
+      this.markers.stairs = mergedData.mergedStairsData || []
+      this.markers.elevators = mergedData.mergedElevatorData || []
+      this.markers.stations = mergedData.mergedStationLocationData || []
+
+      this.searchBarData = this.markers.stations.map((item) => ({ item }))
+
+      this.mapIcons = {
+        stairs: setupMap.createIcon('/src/assets/icons/escalator.png'),
+        elevators: setupMap.createIcon('/src/assets/icons/elevator.png'),
+        stations: setupMap.createIcon('/src/assets/icons/train.png'),
+      }
+
+      this.markerCluster = L.markerClusterGroup({
+        spiderfyOnMaxZoom: false,
+        showCoverageOnHover: false,
+        zoomToBoundsOnClick: true,
+        maxClusterRadius: (zoom) => (zoom < 10 ? 80 : zoom < 15 ? 50 : 25),
+        iconCreateFunction: (cluster) => {
+          return L.divIcon({
+            html: `<div class="cluster-marker">${cluster.getChildCount()}</div>`,
+            className: 'cluster-marker disorder',
+            iconSize: [40, 40],
+          })
+        },
+        disableClusteringAtZoom: 10,
+      })
+
+      this.map = setupMap.init(this.$refs.mapContainer, this.markerCluster)
+
+      this.setupMarkers()
+
+      this.attachZoomListener()
+
+      this.subText = `Es gibt aktuell ${this.markers.stairs.length} Störungen an Fahrtreppen und ${this.markers.elevators.length} Störungen an Aufzügen.`
+    } catch (error) {
+      console.error('Error fetching marker data:', error)
+      this.subText =
+        'Leider konnten die Störungsdaten nicht geladen werden. Bitte versuche es später erneut.'
+    } finally {
+      this.isLoading = false
+    }
   },
   methods: {
-    setupMarkers(stairs, elevators, stations) {
+    setupMarkers() {
       this.markers.stairs = setupMap.addMarkers(
-        stairs,
+        this.markers.stairs,
         this.mapIcons.stairs,
         MarkerTypes.STAIRS,
         (markerData) => {
@@ -133,7 +148,7 @@ export default {
         },
       )
       this.markers.elevators = setupMap.addMarkers(
-        elevators,
+        this.markers.elevators,
         this.mapIcons.elevators,
         MarkerTypes.ELEVATORS,
         (markerData) => {
@@ -141,7 +156,7 @@ export default {
         },
       )
       this.markers.stations = setupMap.addMarkers(
-        stations,
+        this.markers.stations,
         this.mapIcons.stations,
         MarkerTypes.STATIONS,
         (markerData) => {
@@ -151,46 +166,18 @@ export default {
     },
 
     attachZoomListener() {
-      const stairsMarkers = document.querySelectorAll('.stairs-marker')
-      const elevatorsMarkers = document.querySelectorAll('.elevator-marker')
-      // Function to update visibility based on zoom level
-      const updateMarkersVisibility = () => {
-        const zoomLevel = this.map.getZoom()
-        if (zoomLevel < 16) {
-          // Hide markers if zoom level is <= 15
-          stairsMarkers.forEach((marker) => {
-            marker.style.visibility = 'hidden'
-          })
-          elevatorsMarkers.forEach((marker) => {
-            marker.style.visibility = 'hidden'
-          })
-        } else {
-          // Show markers if zoom level is > 15
-          stairsMarkers.forEach((marker) => {
-            marker.style.visibility = 'visible'
-          })
-          elevatorsMarkers.forEach((marker) => {
-            marker.style.visibility = 'visible'
-          })
-        }
-      }
-
-      // Initial visibility check on map load
-      updateMarkersVisibility()
-
-      // Attach zoom event listener to handle zoom changes dynamically
       this.map.on('zoomend', () => {
-        updateMarkersVisibility()
+        const zoomLevel = this.map.getZoom()
+        document.querySelectorAll('.stairs-marker, .elevator-marker').forEach((marker) => {
+          marker.style.visibility = zoomLevel < 16 ? 'hidden' : 'visible'
+        })
       })
     },
 
-    // Handle marker select from search bar
     async handleStationSelect(station) {
-      const resolvedMarkers = await this.markers.stations
-
-      const marker = await resolvedMarkers.find((m) => {
-        return station.item.stationInfo.Haltestellenbereich === m._icon.id
-      })
+      const marker = this.markers.stations.find(
+        (m) => station.item.stationInfo.Haltestellenbereich === m._icon.id,
+      )
 
       if (marker) {
         this.map.setView(marker.getLatLng(), 16)
@@ -204,6 +191,7 @@ export default {
       this.isMarkerSelected = true
       this.selectedMarkerData = { ...markerData, ...typeData }
     },
+
     closeMarkerSelection() {
       this.isMarkerSelected = false
     },
