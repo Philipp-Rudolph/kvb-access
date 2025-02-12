@@ -2,6 +2,8 @@
   <div>
     <div class="loading-container">
       <div class="loading" v-if="isLoading"></div>
+      Wegen einer Störung bei NetCologne können aktuell keine Daten abgefragt werden.
+
       <p>{{ message }}</p>
     </div>
   </div>
