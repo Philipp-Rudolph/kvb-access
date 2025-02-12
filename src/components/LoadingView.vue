@@ -1,11 +1,8 @@
 <template>
   <div>
     <div class="loading-container">
-      <div class="loading"></div>
-      <div class="loading-spinner">
-        <div class="loading-spinner-inner"></div>
-      </div>
-      <p>please stand by, while I fetch the data 🙂‍↕️</p>
+      <div class="loading" v-if="isLoading"></div>
+      <p>{{ message }}</p>
     </div>
   </div>
 </template>
@@ -15,6 +12,17 @@ export default {
   name: 'LoadingView',
   data() {
     return {}
+  },
+  props: {
+    message: {
+      required: false,
+      type: String,
+      default: 'please stand by, while I fetch the data 🙂‍↕️',
+    },
+    isLoading: {
+      required: true,
+      type: Boolean,
+    },
   },
   methods: {},
   mounted() {},
