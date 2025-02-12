@@ -2,10 +2,14 @@
   <div ref="mapContainer" id="map"></div>
 
   <!-- Show loading screen while fetching data -->
-  <LoadingView v-if="isLoading" />
+  <LoadingView v-if="isLoading" :isLoading="isLoading" />
 
   <!-- Show "No Data Available" message if loading is complete but no data exists -->
-  <LoadingView v-else-if="!hasData" message="Sorry, no data available. Please try again later." />
+  <LoadingView
+    v-else-if="!hasData"
+    message="Sorry, no data available. Please try again later."
+    :isLoading="isLoading"
+  />
 
   <template v-else>
     <SearchBar :data="searchBarData" @selectStation="handleStationSelect" />

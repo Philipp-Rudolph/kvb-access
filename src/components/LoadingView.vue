@@ -1,10 +1,7 @@
 <template>
   <div>
     <div class="loading-container">
-      <div class="loading"></div>
-      <div class="loading-spinner">
-        <div class="loading-spinner-inner"></div>
-      </div>
+      <div class="loading" v-if="isLoading"></div>
       <p>{{ message }}</p>
     </div>
   </div>
@@ -21,6 +18,10 @@ export default {
       required: false,
       type: String,
       default: 'please stand by, while I fetch the data 🙂‍↕️',
+    },
+    isLoading: {
+      required: true,
+      type: Boolean,
     },
   },
   methods: {},
