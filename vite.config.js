@@ -19,7 +19,11 @@ export default defineConfig({
       '/api': {
         target: 'https://data.webservice-kvb.koeln/service/opendata', // Use for macOS/Windows, use host IP for Linux
         changeOrigin: true,
-        rewrite: (path) => path.replace(/^\/api/, ''),
+        secure: false,
+        pathRewrite: { '^/api': '' },
+        headers: {
+          'Access-Control-Allow-Origin': '*',
+        },
       },
     },
   },
