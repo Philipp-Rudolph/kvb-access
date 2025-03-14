@@ -1,0 +1,53 @@
+{
+  "stationData": {
+    "properties": {
+      "Haltestellenbereich": "316",
+      "Haltestellenname": "Kinderkrankenhaus",
+      "kurzname": "KKR",
+      "VRSNummer": "15120",
+      "Linien": "16",
+      "Betriebsbereich": "BUS STRAB"
+    }
+  },
+  "stationLocationData": {
+    "geometry": {
+      "coordinates": [6.94191, 50.92916]
+    },
+    "geometry_name": "Koordinate",
+    "properties": {
+      "ASS": 2313,
+      "Name": "Barbarossaplatz",
+      "Kurzname": "BAB",
+      "Betriebsbereich": "STRAB",
+      "Linien": "12 15"
+    }
+  },
+  "stairsData": {
+    "geometry": {
+      "type": "Point",
+      "coordinates": [6.96021415138703, 50.9359752423011]
+    },
+    "geometry_name": "Koordinate",
+    "properties": {
+      "Kennung": "081-55",
+      "Bezeichnung": "Ausgang Heumarkt",
+      "Haltestellenbereich": "1",
+      "Info": null,
+      "timestamp": "2024-12-13T19:12:44"
+    }
+  },
+  "elevatorData": {
+    "geometry": {
+      "type": "Point",
+      "coordinates": [6.95781192779762, 50.9417834179503]
+    },
+    "geometry_name": "Koordinate",
+    "properties": {
+      "Kennung": "011-01",
+      "Bezeichnung": "Fahrtrichtung Breslauer Platz",
+      "Haltestellenbereich": "752",
+      "Info": null,
+      "timestamp": "2024-12-13T19:10:05"
+    }
+  }
+}

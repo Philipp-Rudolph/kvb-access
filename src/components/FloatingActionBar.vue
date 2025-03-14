@@ -5,7 +5,7 @@
       <!-- Show Description if data is provided -->
       <template v-if="data">
         <button @click="$emit('close')" class="close-button">
-          <img src="@/assets/icons/close.png" alt="" />
+          <img src="/assets/icons/close.png" alt="" />
         </button>
         <div class="bar--content">
           <!-- Header Section -->
@@ -150,10 +150,10 @@ export default {
     },
     getIconSrc(type) {
       if (type.isStairs) {
-        this.iconPath = '@/assets/icons/escalator.png'
+        this.iconPath = '/assets/icons/escalator.png'
       }
       if (type.isElevator) {
-        this.iconPath = '@/assets/icons/elevator.png'
+        this.iconPath = '/assets/icons/elevator.png'
       }
       return this.iconPath
     },
@@ -163,7 +163,7 @@ export default {
 
 <style scoped>
 /* import /assets/css/animation.css */
-@import url('@/assets/css/animation.css');
+@import url('/assets/css/animation.css');
 
 .bar {
   position: fixed;
