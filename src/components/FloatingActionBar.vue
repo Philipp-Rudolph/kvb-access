@@ -78,7 +78,6 @@
       <!-- Show Welcome Text if no data is provided -->
       <template v-else>
         <div class="welcome-message">
-          <h1>Barrierefreie Routenplanung für Köln - Willkommen bei KVB Access</h1>
           <p>{{ welcomeText }}</p>
           <p class="description call-out call-out--alert">{{ subText }}</p>
         </div>

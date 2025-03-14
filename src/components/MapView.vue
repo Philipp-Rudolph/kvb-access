@@ -11,12 +11,7 @@
   />
 
   <!-- Show Welcome Bar if no marker is selected -->
-  <FloatingActionBar
-    v-else
-    welcomeText="Deiner Plattform für barrierefreies Reisen in Köln! Hier findest du aktuelle Störungen von Rolltreppen und Aufzügen an KVB-Haltestellen, um deine Route optimal zu planen. Klicke auf eine Haltestelle oder nutze die Suchfunktion, um herauszufinden, welche Stationen uneingeschränkt zugänglich sind."
-    :subText="subText"
-    @close="closeMarkerSelection"
-  />
+  <FloatingActionBar v-else :subText="subText" @close="closeMarkerSelection" />
 
   <LoadingView v-if="isLoading" />
 </template>
