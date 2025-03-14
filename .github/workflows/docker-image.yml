@@ -38,10 +38,6 @@ jobs:
       - name: Trigger Deployment Webhook
         run: |
           SECRET=${{ secrets.WEBHOOK_SECRET }}
-          PAYLOAD="{\"repository\":{\"name\":\"${{ env.REPO_NAME }}\"}}"
-          echo "Sending payload: $PAYLOAD"
           curl -X POST \
             -H "Authorization: $SECRET" \
-            -H "Content-Type: application/json" \
-            -d "$PAYLOAD" \
-            http://${{ secrets.VPS_IP_ADDRESS }}:${{ secrets.VPS_WEBHOOK_PORT }}/hooks/deploy
+            "http://${{ secrets.VPS_IP_ADDRESS }}:${{ secrets.VPS_WEBHOOK_PORT }}/hooks/deploy?repo=${{ env.REPO_NAME }}"
