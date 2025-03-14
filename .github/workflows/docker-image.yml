@@ -1,0 +1,44 @@
+name: Docker Image CI
+
+on:
+  push:
+    branches: ['main']
+  pull_request:
+    branches: ['main']
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      # Setze den Repo-Namen als Variable
+      - name: Extract repository name
+        run: echo "REPO_NAME=$(echo $GITHUB_REPOSITORY | cut -d'/' -f2)" >> $GITHUB_ENV
+
+      # Schritt 1: Docker Image bauen
+      - name: Build the Docker image
+        run: docker build . --file Dockerfile --tag ${{ secrets.DOCKER_USERNAME }}/${{ env.REPO_NAME }}:latest
+
+      # Schritt 2: Logge dich bei Docker Hub ein
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_ACCESS_TOKEN }}
+
+      # Schritt 3: Docker Image in die Registry pushen
+      - name: Push Docker image to Docker Hub
+        run: |
+          docker push ${{ secrets.DOCKER_USERNAME }}/${{ env.REPO_NAME }}:latest
+
+      # Schritt 4: Trigger Deployment Webhook
+      - name: Trigger Deployment Webhook
+        run: |
+          SECRET=${{ secrets.WEBHOOK_SECRET }}
+          curl -X POST -H "Authorization: $SECRET" \
+              -H "Content-Type: application/json" \
+              -d '{"repository": {"name": "'${{ env.REPO_NAME }}'"}}' \
+              http://${{ secrets.VPS_IP_ADDRESS }}:${{ secrets.VPS_WEBHOOK_PORT }}/hooks/deploy
