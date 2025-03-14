@@ -12,6 +12,7 @@ RUN npm install
 
 # Step 5: Copy the source code
 COPY . .
+COPY src/assets/ ./dist/assets/
 
 # Step 6: symlink the .env file for production
 RUN ln -s .env.production .env
