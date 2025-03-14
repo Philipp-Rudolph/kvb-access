@@ -1,0 +1,10 @@
+services:
+  app:
+    build:
+      context: .
+    volumes:
+      - .:/app # Mount the entire repo (or just src/ if needed)
+      - /app/node_modules # Use an isolated node_modules in the container
+    ports:
+      - '9090:9090'
+    command: ['npm', 'run', 'dev']
