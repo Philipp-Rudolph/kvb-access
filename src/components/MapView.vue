@@ -24,13 +24,13 @@
 <script>
 import L from 'leaflet'
 import 'leaflet.markercluster'
-import setupMap from '/src/utils/setupMap'
-import fetchData from '/src/utils/fetchData'
+import setupMap from '@/utils/setupMap'
+import fetchData from '@/utils/fetchData'
 import joinStationWithStairsAndElevators from '@/utils/joinStationWithStairsAndElevators'
 import FloatingActionBar from './FloatingActionBar.vue'
 import LoadingView from './LoadingView.vue'
 import SearchBar from './SearchBar.vue'
-import { MarkerTypes } from '/src/types/MarkerTypes'
+import { MarkerTypes } from '@/types/MarkerTypes'
 
 const API_URL = import.meta.env.VITE_API_BASE_URL
 
@@ -89,9 +89,9 @@ export default {
     ]
 
     this.mapIcons = {
-      stairs: setupMap.createIcon('/src/assets/icons/escalator.png'),
-      elevators: setupMap.createIcon('/src/assets/icons/elevator.png'),
-      stations: setupMap.createIcon('/src/assets/icons/train.png'),
+      stairs: setupMap.createIcon('@/assets/icons/escalator.png'),
+      elevators: setupMap.createIcon('@/assets/icons/elevator.png'),
+      stations: setupMap.createIcon('@/assets/icons/train.png'),
     }
 
     this.markerCluster = L.markerClusterGroup({

@@ -150,10 +150,10 @@ export default {
     },
     getIconSrc(type) {
       if (type.isStairs) {
-        this.iconPath = 'src/assets/icons/escalator.png'
+        this.iconPath = '@/assets/icons/escalator.png'
       }
       if (type.isElevator) {
-        this.iconPath = 'src/assets/icons/elevator.png'
+        this.iconPath = '@/assets/icons/elevator.png'
       }
       return this.iconPath
     },
