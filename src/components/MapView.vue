@@ -34,6 +34,8 @@ import { MarkerTypes } from '/src/types/MarkerTypes'
 
 const API_URL = import.meta.env.VITE_API_BASE_URL
 
+console.log('API_URL: ', API_URL)
+
 const DATA_URLS = {
   STAIRS: `${API_URL}/fahrtreppenstoerung/json`,
   ELEVATORS: `${API_URL}/aufzugsstoerung/json`,
