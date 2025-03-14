@@ -32,11 +32,13 @@ import LoadingView from './LoadingView.vue'
 import SearchBar from './SearchBar.vue'
 import { MarkerTypes } from '/src/types/MarkerTypes'
 
+const API_URL = import.meta.env.VITE_API_BASE_URL
+
 const DATA_URLS = {
-  STAIRS: `/api/fahrtreppenstoerung/json`,
-  ELEVATORS: `/api/aufzugsstoerung/json`,
-  STATIONS: `/api/haltestellenbereiche/json`,
-  STATION_LOCATIONS: `/api/haltestellen/json`,
+  STAIRS: `${API_URL}/fahrtreppenstoerung/json`,
+  ELEVATORS: `${API_URL}/aufzugsstoerung/json`,
+  STATIONS: `${API_URL}/haltestellenbereiche/json`,
+  STATION_LOCATIONS: `${API_URL}/haltestellen/json`,
 }
 
 export default {

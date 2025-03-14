@@ -13,6 +13,9 @@ RUN npm install
 # Step 5: Copy the source code
 COPY . .
 
+# Step 6: symlink the .env file for production
+RUN ln -s .env.production .env
+
 # Step 6: Build the App for production
 RUN npm run build
 
