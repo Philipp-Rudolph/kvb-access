@@ -1,7 +1,8 @@
-version: '3'
-
 services:
   vue-app:
+    build:
+      context: .
+      dockerfile: Dockerfile
     image: areyouhigh/kvb-access:latest
     container_name: kvb-access
     ports:

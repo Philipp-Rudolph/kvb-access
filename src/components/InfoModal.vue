@@ -219,13 +219,15 @@ export default {
 
 .disorder-info {
 
+  overflow-wrap: anywhere;
+  font-size: .75rem;
+
   h3 {
     margin: 0;
   }
 
   p {
     color: rgba(255, 255, 255, 0.5);
-    font-size: 0.8rem;
     margin: 0;
   }
 }
