@@ -167,7 +167,7 @@ export default {
 .no-disorder {
   height: 25px !important;
   width: 25px !important;
-  opacity: 0.1;
+  opacity: 0.25;
 }
 
 .icon:hover,

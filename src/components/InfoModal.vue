@@ -35,7 +35,11 @@
               </template>
             </p>
 
-            <p class="description call-out call-out--info">
+            <p v-else class="description call-out call-out--info">
+              An dieser Haltestelle gibt es keine Störungen an Rolltreppen oder Aufzügen.
+            </p>
+
+            <p class="description call-out call-out--info" v-if="data.stationInfo.Lageplan">
               Laden Sie <a :href="data.stationInfo.Lageplan" target="_blank">hier</a> den Lageplan der Haltestelle herunter.
             </p>
           </div>
@@ -54,7 +58,7 @@
 
         <template v-if="data.properties.Linien">
           <div class="description lines-info">
-            <p>Hier fahren die Linien:</p>
+            <p>{{ data.properties.Linien.length > 1 ? 'Hier fahren die Linien' : 'Hier fährt die Linie' }}</p>
             <div>
               <span
                 v-for="(linie, index) in data.properties.Linien.split(' ')"
