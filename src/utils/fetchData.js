@@ -3,27 +3,25 @@ const fetchData = async (url) => {
     const response = await fetch(url, {
       method: 'GET',
       headers: {
-        Accept: 'application/json', // Request JSON format
+        Accept: 'application/json',
       },
-    })
+    });
 
-    // Fetch raw binary data
-    const buffer = await response.arrayBuffer()
+    // Hole den Response direkt als Text (der Proxy kümmert sich um die Kodierung)
+    const text = await response.text();
 
-    const text = new TextDecoder('iso-8859-2').decode(buffer)
-
-    // Parse JSON or repair if necessary
-    let data
+    // Parse JSON oder repariere falls notwendig
+    let data;
     try {
-      data = JSON.parse(text)
+      data = JSON.parse(text);
     } catch (e) {
-      console.error('JSON Parsing Error:', e)
+      console.error('JSON Parsing Error:', e);
+      console.log('Problematischer Text:', text.substring(0, 200)); // Zeige Anfang des Textes für Debugging
     }
-
-    return data
+    return data;
   } catch (error) {
-    console.error('Fetch Error:', error)
+    console.error('Fetch Error:', error);
   }
-}
+};
 
-export default fetchData
+export default fetchData;
