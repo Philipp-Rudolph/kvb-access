@@ -12,7 +12,6 @@
       </div>
 
       <div class="modal-body">
-
         <template v-if="!isStation">
           <p class="description call-out call-out--alert">
             {{ isStairs ? 'Diese Rolltreppe' : 'Dieser Aufzug' }}
@@ -22,14 +21,18 @@
         </template>
 
         <template v-else>
-          <p v-if="data.hasDisorder" class="description call-out call-out--alert">
-            An dieser Haltestelle gibt es Störungen an {{ totalNumberOfDisorders > 1 ? totalNumberOfDisorders + ' Rolltreppen und/oder Aufzügen' : 'einer Rolltreppe oder einem Aufzug' }}.
-          </p>
+          <div class="call-outs">
+            <p v-if="data.hasDisorder" class="description call-out call-out--alert">
+              An dieser Haltestelle gibt es Störungen an {{ totalNumberOfDisorders > 1 ? totalNumberOfDisorders + ' Rolltreppen und/oder Aufzügen' : 'einer Rolltreppe oder einem Aufzug' }}.
+            </p>
 
-          <p class="description call-out call-out--info">
-            Laden Sie <a :href="data.stationInfo.Lageplan" target="_blank">hier</a> den Lageplan der Haltestelle herunter.
-          </p>
+            <p class="description call-out call-out--info">
+              Laden Sie <a :href="data.stationInfo.Lageplan" target="_blank">hier</a> den Lageplan der Haltestelle herunter.
+            </p>
+          </div>
+        </template>
 
+        <template v-if="data.properties.Linien">
           <div class="description lines-info">
             <p>Hier fahren die Linien:</p>
             <div>
@@ -37,9 +40,7 @@
                 v-for="(linie, index) in data.properties.Linien.split(' ')"
                 :key="index"
                 class="lines"
-                :class="[
-                  `line-${linie}`
-                ]"
+                :class="[ `line-${linie}` ]"
                 :style="{ backgroundColor: linienFarben[linie] || '#ccc', color: '#fff' }">
                 {{ linie }}
               </span>
@@ -47,14 +48,13 @@
           </div>
         </template>
 
-      </div>
-
-      <div v-if="data.hasDisorder" class="disorder-list" id="disorders">
-        <div v-for="disorder in data.disorders" :key="disorder.id" class="disorder-item">
-          <img :src="getIconSrc(disorder.type)" alt="" class="disorder-icon" />
-          <div class="disorder-info">
-            <h3>{{ disorder.type.isStairs ? 'Rolltreppe' : 'Aufzug' }} {{ disorder.properties.Bezeichnung }} defekt</h3>
-            <p>Zuletzt aktualisiert: {{ formatDate(disorder.properties.timestamp) }}</p>
+        <div v-if="data.hasDisorder" class="disorder-list">
+          <div v-for="disorder in data.disorders" :key="disorder.id" class="disorder-item">
+            <img :src="getIconSrc(disorder.type)" alt="" class="disorder-icon" />
+            <div class="disorder-info">
+              <h3>{{ disorder.type.isStairs ? 'Rolltreppe' : 'Aufzug' }} {{ disorder.properties.Bezeichnung }} defekt</h3>
+              <p>Zuletzt aktualisiert: {{ formatDate(disorder.properties.timestamp) }}</p>
+            </div>
           </div>
         </div>
       </div>
@@ -123,35 +123,49 @@ export default {
 
 .modal-content {
   background: #222;
-  padding: 2rem;
+  padding: 0; /* Padding wird von Header und Body übernommen */
   border-radius: 10px;
   max-width: 500px;
   width: 90%;
-  max-height: 80%;
+  max-height: 80vh;
   color: white;
   position: relative;
-  overflow: scroll;
-  /* hide scrollbar */
-  scrollbar-width: none;
-  -ms-overflow-style: none;
-}
-
-.modal-content, .modal-body {
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
 }
 
 .modal-header {
+  position: sticky; /* Fixiert den Header im Modal */
+  top: 0;
+  left: 0;
+  width: 100%;
+  padding: 1rem;
+  background: rgba(0, 0, 0, 0.25);
+  z-index: 10; /* Damit er über dem Body bleibt */
   display: flex;
   justify-content: space-between;
   align-items: center;
 
   h1 {
-    margin: 0;
-    font-size: 1.5rem;
+    font-size: 1.5rem;;
   }
 }
+
+.modal-body {
+  flex: 1; /* Füllt den restlichen Platz aus */
+  overflow-y: auto; /* Nur der Body ist scrollbar */
+  padding: 1.5rem;
+  max-height: calc(80vh - 60px); /* Max Höhe berechnen */
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+/* Optional: Scrollbar ausblenden */
+.modal-body::-webkit-scrollbar {
+  display: none;
+}
+
 
 .close-button {
   width: 32px;
@@ -185,6 +199,11 @@ export default {
   background-color: rgb(255, 0, 0, 0.5);
 }
 
+.call-outs {
+  display: flex;
+  flex-direction: column;
+  gap: .5rem;
+}
 
 .call-out {
   padding: 1rem;
@@ -199,13 +218,18 @@ export default {
   background: rgba(0, 0, 255, 0.1);
 }
 
+.disorder-list {
+  display: flex;
+  flex-direction: column;
+  gap: .5rem;
+}
+
 .disorder-item {
   display: flex;
   align-items: center;
   background: rgba(255, 255, 255, 0.1);
   padding: 1rem;
   border-radius: 0.5rem;
-  margin-bottom: 0.5rem;
   transition: transform 0.2s ease-in-out;
   cursor: pointer;
 

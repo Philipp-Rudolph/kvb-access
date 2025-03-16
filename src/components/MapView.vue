@@ -217,7 +217,7 @@ export default {
 .icon,
 .leaflet-marker-icon {
   object-fit: contain;
-  border-radius: 50%;
+  border-radius: .5rem;
   background-color: #fff;
   transition:
     transform 0.3s ease-out,
@@ -236,17 +236,15 @@ export default {
   padding: 0.25rem !important;
   opacity: 0.2;
 
-  height: 40px !important;
-  width: 40px !important;
+  height: 35px !important;
+  width: 35px !important;
 }
 
 .disorder {
   opacity: 1;
-  border: 2px solid red;
+  border: 1.5px solid red;
   /* red aura shadow */
-  box-shadow:
-    0 0 40px rgba(255, 0, 0, 0.9),
-    0 0 60px rgba(255, 255, 255, 0.6);
+
 }
 
 .no-disorder {
@@ -265,14 +263,6 @@ export default {
     0 0 60px rgba(255, 255, 255, 0.6);
 }
 
-/* Aurora Hover Effect */
-.icon:hover {
-  box-shadow:
-    0 0 150px rgba(255, 60, 60, 1),
-    /* Brighter red */ 0 0 200px rgba(0, 255, 255, 1),
-    /* Brighter cyan */ 0 0 400px rgba(255, 255, 255, 0.8); /* Brighter white glow */
-  animation: box-shadow-aurora 2s infinite alternate-reverse ease-in-out;
-}
 
 @keyframes box-shadow-aurora {
   0% {
