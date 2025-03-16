@@ -37,6 +37,9 @@
                 v-for="(linie, index) in data.properties.Linien.split(' ')"
                 :key="index"
                 class="lines"
+                :class="[
+                  `line-${linie}`
+                ]"
                 :style="{ backgroundColor: linienFarben[linie] || '#ccc', color: '#fff' }">
                 {{ linie }}
               </span>
@@ -261,6 +264,10 @@ export default {
 }
 .lines:hover {
   transform: scale(1.2);
+}
+
+.line-5 {
+  color: #000 !important;
 }
 
 </style>
