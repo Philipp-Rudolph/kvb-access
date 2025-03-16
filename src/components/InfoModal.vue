@@ -235,6 +235,20 @@ export default {
   flex-direction: column;
 }
 
+.lines:first-child {
+  margin-left: 0;
+}
+
+@media screen and (min-width: 768px) {
+  .lines-info {
+  flex-direction: row;
+  }
+
+  .lines:first-child {
+    margin-left: 1rem;
+  }
+}
+
 .lines {
   display: inline-block; /* Wichtig für transform */
   padding: 0 0.75rem;
