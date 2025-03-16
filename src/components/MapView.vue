@@ -4,14 +4,14 @@
   <SearchBar v-if="!isLoading" :data="searchBarData" @selectStation="handleStationSelect" />
 
   <!-- Show Description Bar if a marker is selected -->
-  <FloatingActionBar
+  <InfoModal
     v-if="isMarkerSelected"
     :data="selectedMarkerData"
     @close="closeMarkerSelection"
   />
 
   <!-- Show Welcome Bar if no marker is selected -->
-  <FloatingActionBar v-else :subText="subText" @close="closeMarkerSelection" />
+  <InfoModal v-else :subText="subText" @close="closeMarkerSelection" />
 
   <LoadingView v-if="isLoading" />
 </template>
@@ -22,7 +22,7 @@ import 'leaflet.markercluster'
 import setupMap from '/src/utils/setupMap'
 import fetchData from '/src/utils/fetchData'
 import joinStationWithStairsAndElevators from '@/utils/joinStationWithStairsAndElevators'
-import FloatingActionBar from './FloatingActionBar.vue'
+import InfoModal from './InfoModal.vue'
 import LoadingView from './LoadingView.vue'
 import SearchBar from './SearchBar.vue'
 import { MarkerTypes } from '/src/types/MarkerTypes'
@@ -56,7 +56,7 @@ export default {
     }
   },
   components: {
-    FloatingActionBar,
+    InfoModal,
     LoadingView,
     SearchBar,
   },
@@ -340,4 +340,9 @@ export default {
   stroke: rgba(0, 0, 0, 0.5);
   stroke-width: 2px;
 }
+
+.leaflet-tile {
+  filter: brightness(3) contrast(1.1) !important;
+}
+
 </style>
