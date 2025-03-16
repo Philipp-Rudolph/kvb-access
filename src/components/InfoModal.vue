@@ -23,7 +23,16 @@
         <template v-else>
           <div class="call-outs">
             <p v-if="data.hasDisorder" class="description call-out call-out--alert">
-              An dieser Haltestelle gibt es Störungen an {{ totalNumberOfDisorders > 1 ? totalNumberOfDisorders + ' Rolltreppen und/oder Aufzügen' : 'einer Rolltreppe oder einem Aufzug' }}.
+              An dieser Haltestelle gibt es Störungen
+              <template v-if="totalNumberOfEscalators > 0 && totalNumberOfElevators > 0">
+                an {{ totalNumberOfEscalators > 1 ? totalNumberOfEscalators : 'einer' }} Rolltreppe{{ totalNumberOfEscalators > 1 ? 'n' : '' }} und {{ totalNumberOfElevators > 1 ? totalNumberOfElevators + 'Aufzügen' : 'einem Aufzug' }}.
+              </template>
+              <template v-else-if="totalNumberOfEscalators > 0">
+                an {{ totalNumberOfEscalators > 1 ? totalNumberOfEscalators : 'einer' }} Rolltreppe{{ totalNumberOfEscalators > 1 ? 'n' : '' }}.
+              </template>
+              <template v-else-if="totalNumberOfElevators > 0">
+                an {{ totalNumberOfElevators > 1 ? totalNumberOfElevators + 'Aufzügen' : 'einem Aufzug' }}.
+              </template>
             </p>
 
             <p class="description call-out call-out--info">
@@ -31,6 +40,17 @@
             </p>
           </div>
         </template>
+
+        <div v-if="data.hasDisorder" class="disorder-list">
+          <h2>{{ totalNumberOfDisorders }} Störung{{ totalNumberOfDisorders > 1 ? 'en' : '' }}</h2>
+          <div v-for="disorder in data.disorders" :key="disorder.id" class="disorder-item">
+            <img :src="getIconSrc(disorder.type)" alt="" class="disorder-icon" />
+            <div class="disorder-info">
+              <h3>{{ disorder.type.isStairs ? 'Rolltreppe' : 'Aufzug' }} {{ disorder.properties.Bezeichnung }} defekt</h3>
+              <p>Zuletzt aktualisiert: {{ formatDate(disorder.properties.timestamp) }}</p>
+            </div>
+          </div>
+        </div>
 
         <template v-if="data.properties.Linien">
           <div class="description lines-info">
@@ -48,15 +68,6 @@
           </div>
         </template>
 
-        <div v-if="data.hasDisorder" class="disorder-list">
-          <div v-for="disorder in data.disorders" :key="disorder.id" class="disorder-item">
-            <img :src="getIconSrc(disorder.type)" alt="" class="disorder-icon" />
-            <div class="disorder-info">
-              <h3>{{ disorder.type.isStairs ? 'Rolltreppe' : 'Aufzug' }} {{ disorder.properties.Bezeichnung }} defekt</h3>
-              <p>Zuletzt aktualisiert: {{ formatDate(disorder.properties.timestamp) }}</p>
-            </div>
-          </div>
-        </div>
       </div>
     </div>
   </div>
@@ -90,6 +101,8 @@ export default {
     isStairs() { return this.data?.type?.isStairs; },
     isElevator() { return this.data?.type?.isElevator; },
     totalNumberOfDisorders() { return this.data?.disorders?.length || 0; },
+    totalNumberOfEscalators() { return this.data?.disorders?.filter(disorder => disorder.type.isStairs).length || 0; },
+    totalNumberOfElevators() { return this.data?.disorders?.filter(disorder => disorder.type.isElevator).length || 0; },
   },
   methods: {
     formatDate(date) {
@@ -139,7 +152,7 @@ export default {
   top: 0;
   left: 0;
   width: 100%;
-  padding: 1rem;
+  padding: 1.5rem;
   background: rgba(0, 0, 0, 0.25);
   z-index: 10; /* Damit er über dem Body bleibt */
   display: flex;
