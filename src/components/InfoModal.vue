@@ -113,7 +113,7 @@ export default {
   width: 100vw;
   top: 0;
   left: 0;
-  background: rgba(0, 0, 0, 0.7);
+  background: rgba(0, 0, 0, 0.9);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -136,11 +136,16 @@ export default {
   -ms-overflow-style: none;
 }
 
+.modal-content, .modal-body {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
 .modal-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 1rem;
 
   h1 {
     margin: 0;
@@ -194,10 +199,6 @@ export default {
   background: rgba(0, 0, 255, 0.1);
 }
 
-.disorder-list {
-  margin-top: 1rem;
-}
-
 .disorder-item {
   display: flex;
   align-items: center;
@@ -225,10 +226,6 @@ export default {
   overflow-wrap: anywhere;
   font-size: .75rem;
 
-  h3 {
-    margin: 0;
-  }
-
   p {
     color: rgba(255, 255, 255, 0.5);
     margin: 0;
@@ -238,6 +235,14 @@ export default {
 .lines-info {
   display: flex;
   flex-direction: column;
+  gap: 1rem;
+
+  div {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    justify-content: center;
+  }
 }
 
 .lines:first-child {
@@ -246,11 +251,7 @@ export default {
 
 @media screen and (min-width: 768px) {
   .lines-info {
-  flex-direction: row;
-  }
-
-  .lines:first-child {
-    margin-left: 1rem;
+    flex-direction: row;
   }
 }
 
@@ -258,7 +259,6 @@ export default {
   display: inline-block; /* Wichtig für transform */
   padding: 0 0.75rem;
   border-radius: 0.5rem;
-  margin: 0 0.5rem;
   transition: transform 0.2s ease-in-out; /* Sanfte Animation */
   cursor: pointer;
 }
