@@ -66,6 +66,7 @@ const setupMap = {
         L.DomUtil.removeClass(marker._icon, 'no-disorder')
       } else {
         L.DomUtil.addClass(marker._icon, 'no-disorder')
+        L.DomUtil.addClass(marker._icon, 'station-marker')
         L.DomUtil.removeClass(marker._icon, 'disorder')
       }
 

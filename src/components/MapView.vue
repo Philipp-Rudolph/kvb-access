@@ -159,6 +159,11 @@ export default {
   width: 35px !important;
 }
 
+.station-marker {
+  z-index: 10000 !important;
+}
+
+
 .disorder {
   opacity: 1;
   border: 1.5px solid red;
