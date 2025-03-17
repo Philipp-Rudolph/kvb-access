@@ -10,7 +10,7 @@ import MapView from './components/MapView.vue'
 
 <style>
 main {
-  height: 100vh;
+  height: 100dvh;
   width: 100vw;
   display: flex;
   justify-content: center;

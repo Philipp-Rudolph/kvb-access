@@ -28,7 +28,7 @@ export default {
   align-items: center;
   flex-direction: column;
   gap: 2.5rem;
-  height: 100vh;
+  height: 100dvh;
   width: 100%;
   position: absolute;
   top: 0;
