@@ -1,6 +1,10 @@
 <script setup>
 import MapView from './components/MapView.vue'
+document.body.style.height = "200vh"; // Make the page temporarily tall
 window.scrollTo(0, 1);
+setTimeout(() => {
+  document.body.style.height = "100vh"; // Restore height
+}, 100);
 </script>
 
 <template>
