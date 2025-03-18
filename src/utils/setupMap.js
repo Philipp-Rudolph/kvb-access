@@ -64,6 +64,8 @@ const setupMap = {
       if (item.hasDisorder || type === 'stairs' || type === 'elevator') {
         L.DomUtil.addClass(marker._icon, 'disorder')
         L.DomUtil.removeClass(marker._icon, 'no-disorder')
+        // add unique id to marker
+        marker._icon.id = item.properties.Kennung
       } else {
         L.DomUtil.addClass(marker._icon, 'no-disorder')
         L.DomUtil.addClass(marker._icon, 'station-marker')

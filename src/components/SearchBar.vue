@@ -38,9 +38,6 @@ export default {
       search: '',
     }
   },
-  moounted() {
-    console.log(this.data)
-  },
   methods: {
     filteredStations(searchValue) {
       const lowercaseSearch = searchValue.toLowerCase()

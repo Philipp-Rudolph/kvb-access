@@ -1,0 +1,10 @@
+{
+    "name": "KVB Access",
+    "short_name": "KVB Access",
+    "description": "Plane deine Route barrierefrei: Erfahre, welche Rolltreppen und Aufzüge an KVB-Haltestellen in Köln außer Betrieb sind.",
+    "start_url": "/?source=pwa",
+    "display": "standalone",
+    "background_color": "#000000",
+    "theme_color": "#00bd7e"
+  }
+  
