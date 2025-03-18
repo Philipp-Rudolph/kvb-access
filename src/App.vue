@@ -1,5 +1,6 @@
 <script setup>
 import MapView from './components/MapView.vue'
+window.scrollTo(0, 1);
 </script>
 
 <template>
