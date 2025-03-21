@@ -95,14 +95,23 @@ export default {
   },
   methods: {
     setupMarkers(stairs, elevators, stations) {
-      this.markers.stairs = setupMap.addMarkers(stairs, this.mapIcons.stairs, MarkerTypes.STAIRS, (data) =>
-        this.handleMarkerClick(data, { type: { isStairs: true } }),
+      this.markers.stairs = setupMap.addMarkers(
+        stairs,
+        this.mapIcons.stairs,
+        MarkerTypes.STAIRS,
+        (data) => this.handleMarkerClick(data, { type: { isStairs: true } }),
       )
-      this.markers.elevators = setupMap.addMarkers(elevators, this.mapIcons.elevators, MarkerTypes.ELEVATORS, (data) =>
-        this.handleMarkerClick(data, { type: { isElevator: true } }),
+      this.markers.elevators = setupMap.addMarkers(
+        elevators,
+        this.mapIcons.elevators,
+        MarkerTypes.ELEVATORS,
+        (data) => this.handleMarkerClick(data, { type: { isElevator: true } }),
       )
-      this.markers.stations = setupMap.addMarkers(stations, this.mapIcons.stations, MarkerTypes.STATIONS, (data) =>
-        this.handleMarkerClick(data, { type: { isStation: true } }),
+      this.markers.stations = setupMap.addMarkers(
+        stations,
+        this.mapIcons.stations,
+        MarkerTypes.STATIONS,
+        (data) => this.handleMarkerClick(data, { type: { isStation: true } }),
       )
     },
     attachZoomListener() {
@@ -120,7 +129,11 @@ export default {
         (m) => station.item.stationInfo.Haltestellenbereich === m._icon.id,
       )
       if (marker) {
-        this.map.setView(marker.getLatLng(), 16)
+        this.map.flyTo(marker.getLatLng(), 16, {
+          animate: true,
+          duration: 1.5,
+          easeLinearity: 0.2,
+        })
         this.handleMarkerClick(station.item, { type: { isStation: true } })
         marker.openPopup()
         marker._icon.style.opacity = 1
@@ -148,7 +161,13 @@ export default {
   object-fit: contain;
   border-radius: 0.75rem;
   background-color: #fff;
-  transition: transform 0.3s ease-out, filter 0.3s ease-out, box-shadow 0.3s ease-out;
+  transition:
+    height 0.3s,
+    width 0.3s,
+    top 0.3s,
+    left 0.3s,
+    filter 0.3s ease-out,
+    box-shadow 0.3s ease-out;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -157,12 +176,19 @@ export default {
   opacity: 0.2;
   height: 35px !important;
   width: 35px !important;
+  position: absolute; /* Wichtig, damit die Verschiebung funktioniert */
+}
+
+.disorder:hover {
+  height: 40px !important;
+  width: 40px !important;
+  top: -2.5px; /* Verschiebung um die Hälfte der Größenänderung */
+  left: -2.5px; /* Verschiebung um die Hälfte der Größenänderung */
 }
 
 .station-marker {
   z-index: 10000 !important;
 }
-
 
 .disorder {
   opacity: 1;
@@ -173,24 +199,46 @@ export default {
   height: 25px !important;
   width: 25px !important;
   opacity: 0.25;
+  transition: opacity 0.3s ease;
 }
 
-.icon:hover,
-.leaflet-marker-icon:hover {
+.no-disorder:hover {
+  opacity: 0.75;
+}
+
+.disorder {
   filter: invert(0);
   background-color: #fff;
-  box-shadow: 0 0 100px rgba(255, 0, 0, 0.9), 0 0 60px rgba(255, 255, 255, 0.6);
+  box-shadow:
+    0 0 100px rgba(255, 0, 0, 0.3),
+    0 0 60px rgba(255, 255, 255, 0.3);
+}
+.disorder:hover {
+  filter: invert(0);
+  background-color: #fff;
+  box-shadow:
+    0 0 100px rgba(255, 0, 0, 0.9),
+    0 0 60px rgba(255, 255, 255, 0.6);
 }
 
 @keyframes box-shadow-aurora {
   0% {
-    box-shadow: 0 0 120px rgba(255, 80, 80, 0.9), 0 0 250px rgba(0, 200, 255, 0.8), 0 0 350px rgba(255, 255, 255, 0.6);
+    box-shadow:
+      0 0 120px rgba(255, 80, 80, 0.9),
+      0 0 250px rgba(0, 200, 255, 0.8),
+      0 0 350px rgba(255, 255, 255, 0.6);
   }
   50% {
-    box-shadow: 0 0 180px rgba(255, 50, 50, 1), 0 0 350px rgba(0, 255, 255, 1), 0 0 450px rgba(255, 255, 255, 0.9);
+    box-shadow:
+      0 0 180px rgba(255, 50, 50, 1),
+      0 0 350px rgba(0, 255, 255, 1),
+      0 0 450px rgba(255, 255, 255, 0.9);
   }
   100% {
-    box-shadow: 0 0 150px rgba(255, 120, 120, 0.9), 0 0 300px rgba(50, 220, 255, 0.8), 0 0 400px rgba(255, 255, 255, 0.7);
+    box-shadow:
+      0 0 150px rgba(255, 120, 120, 0.9),
+      0 0 300px rgba(50, 220, 255, 0.8),
+      0 0 400px rgba(255, 255, 255, 0.7);
   }
 }
 

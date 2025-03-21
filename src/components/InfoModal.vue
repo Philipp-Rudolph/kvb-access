@@ -25,13 +25,26 @@
             <p v-if="data.hasDisorder" class="description call-out call-out--alert">
               An dieser Haltestelle gibt es Störungen
               <template v-if="totalNumberOfEscalators > 0 && totalNumberOfElevators > 0">
-                an {{ totalNumberOfEscalators > 1 ? totalNumberOfEscalators : 'einer' }} Rolltreppe{{ totalNumberOfEscalators > 1 ? 'n' : '' }} und {{ totalNumberOfElevators > 1 ? totalNumberOfElevators + 'Aufzügen' : 'einem Aufzug' }}.
+                an
+                {{ totalNumberOfEscalators > 1 ? totalNumberOfEscalators : 'einer' }} Rolltreppe{{
+                  totalNumberOfEscalators > 1 ? 'n' : ''
+                }}
+                und
+                {{
+                  totalNumberOfElevators > 1 ? totalNumberOfElevators + 'Aufzügen' : 'einem Aufzug'
+                }}.
               </template>
               <template v-else-if="totalNumberOfEscalators > 0">
-                an {{ totalNumberOfEscalators > 1 ? totalNumberOfEscalators : 'einer' }} Rolltreppe{{ totalNumberOfEscalators > 1 ? 'n' : '' }}.
+                an
+                {{ totalNumberOfEscalators > 1 ? totalNumberOfEscalators : 'einer' }} Rolltreppe{{
+                  totalNumberOfEscalators > 1 ? 'n' : ''
+                }}.
               </template>
               <template v-else-if="totalNumberOfElevators > 0">
-                an {{ totalNumberOfElevators > 1 ? totalNumberOfElevators + 'Aufzügen' : 'einem Aufzug' }}.
+                an
+                {{
+                  totalNumberOfElevators > 1 ? totalNumberOfElevators + 'Aufzügen' : 'einem Aufzug'
+                }}.
               </template>
             </p>
 
@@ -40,38 +53,54 @@
             </p>
 
             <p class="description call-out call-out--info" v-if="data.stationInfo.Lageplan">
-              Laden Sie <a :href="data.stationInfo.Lageplan" target="_blank">hier</a> den Lageplan der Haltestelle herunter.
+              Laden Sie <a :href="data.stationInfo.Lageplan" target="_blank">hier</a> den Lageplan
+              der Haltestelle herunter.
             </p>
           </div>
         </template>
 
         <div v-if="data.hasDisorder" class="disorder-list">
           <h2>{{ totalNumberOfDisorders }} Störung{{ totalNumberOfDisorders > 1 ? 'en' : '' }}</h2>
-          <div v-for="disorder in data.disorders" :key="disorder.id" class="disorder-item">
+          <a
+            :href="'#' + disorder.properties.Kennung"
+            @click.prevent="selectMarker(disorder)"
+            v-for="disorder in data.disorders"
+            :key="disorder.id"
+            class="disorder-item"
+          >
             <img :src="getIconSrc(disorder.type)" alt="" class="disorder-icon" />
             <div class="disorder-info">
-              <h3>{{ disorder.type.isStairs ? 'Rolltreppe' : 'Aufzug' }} {{ disorder.properties.Bezeichnung }} defekt</h3>
+              <h3>
+                {{ disorder.type.isStairs ? 'Rolltreppe' : 'Aufzug' }}
+                {{ disorder.properties.Bezeichnung }} defekt
+              </h3>
               <p>Zuletzt aktualisiert: {{ formatDate(disorder.properties.timestamp) }}</p>
             </div>
-          </div>
+          </a>
         </div>
 
         <template v-if="data.properties.Linien">
           <div class="description lines-info">
-            <p>{{ data.properties.Linien.length > 1 ? 'Hier fahren die Linien' : 'Hier fährt die Linie' }}</p>
+            <p>
+              {{
+                data.properties.Linien.length > 1
+                  ? 'Hier fahren die Linien'
+                  : 'Hier fährt die Linie'
+              }}
+            </p>
             <div>
               <span
                 v-for="(linie, index) in data.properties.Linien.split(' ')"
                 :key="index"
                 class="lines"
-                :class="[ `line-${linie}` ]"
-                :style="{ backgroundColor: linienFarben[linie] || '#ccc', color: '#fff' }">
+                :class="[`line-${linie}`]"
+                :style="{ backgroundColor: linienFarben[linie] || '#ccc', color: '#fff' }"
+              >
                 {{ linie }}
               </span>
             </div>
           </div>
         </template>
-
       </div>
     </div>
   </div>
@@ -85,41 +114,67 @@ export default {
   data() {
     return {
       linienFarben: {
-        "1": "#e30613",
-        "3": "#a20067",
-        "4": "#009ee0",
-        "5": "#ffed00",
-        "7": "#ea7600",
-        "9": "#be3075",
-        "12": "#007a33",
-        "13": "#008c95",
-        "15": "#60be68",
-        "16": "#005f2f",
-        "17": "#153f74",
-        "18": "#231f20",
-      }
-    };
+        1: '#e30613',
+        3: '#a20067',
+        4: '#009ee0',
+        5: '#ffed00',
+        7: '#ea7600',
+        9: '#be3075',
+        12: '#007a33',
+        13: '#008c95',
+        15: '#60be68',
+        16: '#005f2f',
+        17: '#153f74',
+        18: '#231f20',
+      },
+    }
   },
   computed: {
-    isStation() { return this.data?.type?.isStation; },
-    isStairs() { return this.data?.type?.isStairs; },
-    isElevator() { return this.data?.type?.isElevator; },
-    totalNumberOfDisorders() { return this.data?.disorders?.length || 0; },
-    totalNumberOfEscalators() { return this.data?.disorders?.filter(disorder => disorder.type.isStairs).length || 0; },
-    totalNumberOfElevators() { return this.data?.disorders?.filter(disorder => disorder.type.isElevator).length || 0; },
+    isStation() {
+      return this.data?.type?.isStation
+    },
+    isStairs() {
+      return this.data?.type?.isStairs
+    },
+    isElevator() {
+      return this.data?.type?.isElevator
+    },
+    totalNumberOfDisorders() {
+      return this.data?.disorders?.length || 0
+    },
+    totalNumberOfEscalators() {
+      return this.data?.disorders?.filter((disorder) => disorder.type.isStairs).length || 0
+    },
+    totalNumberOfElevators() {
+      return this.data?.disorders?.filter((disorder) => disorder.type.isElevator).length || 0
+    },
   },
   methods: {
     formatDate(date) {
-      return new Date(date).toLocaleString('de-DE');
+      if (!date) return ''
+      return new Date(date).toLocaleString('de-DE')
     },
     formatLines(lines) {
-      return lines.replaceAll(' ', ', ');
+      return lines ? lines.replaceAll(' ', ', ') : ''
     },
     getIconSrc(type) {
-      return type.isStairs ? '/assets/icons/escalator.png' : '/assets/icons/elevator.png';
+      return type?.isStairs ? '/assets/icons/escalator.png' : '/assets/icons/elevator.png'
+    },
+    selectMarker(disorder) {
+      if (!this.markers || !disorder?.properties?.Kennung) return
+
+      const marker = this.markers.find((m) => m.id === disorder.properties.Kennung)
+      if (marker && this.map) {
+        marker.openPopup()
+        this.map.flyTo(marker.getLatLng(), 16, {
+          animate: true,
+          duration: 1.5,
+          easeLinearity: 0.2,
+        })
+      }
     },
   },
-};
+}
 </script>
 
 <style scoped>
@@ -130,7 +185,7 @@ export default {
   width: 100vw;
   top: 0;
   left: 0;
-  background: rgba(0, 0, 0, 0.95);
+  background: rgba(0, 0, 0, 0.5);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -164,7 +219,7 @@ export default {
   align-items: center;
 
   h1 {
-    font-size: 1.5rem;;
+    font-size: 1.5rem;
   }
 }
 
@@ -182,7 +237,6 @@ export default {
 .modal-body::-webkit-scrollbar {
   display: none;
 }
-
 
 .close-button {
   width: 32px;
@@ -219,7 +273,7 @@ export default {
 .call-outs {
   display: flex;
   flex-direction: column;
-  gap: .5rem;
+  gap: 0.5rem;
 }
 
 .call-out {
@@ -238,7 +292,7 @@ export default {
 .disorder-list {
   display: flex;
   flex-direction: column;
-  gap: .5rem;
+  gap: 0.5rem;
 }
 
 .disorder-item {
@@ -249,6 +303,10 @@ export default {
   border-radius: 0.5rem;
   transition: transform 0.2s ease-in-out;
   cursor: pointer;
+
+  & h3 {
+    color: white;
+  }
 
   &:hover {
     transform: scale(1.025);
@@ -263,9 +321,8 @@ export default {
 }
 
 .disorder-info {
-
   overflow-wrap: anywhere;
-  font-size: .75rem;
+  font-size: 0.75rem;
 
   p {
     color: rgba(255, 255, 255, 0.5);
@@ -310,5 +367,4 @@ export default {
 .line-5 {
   color: #000 !important;
 }
-
 </style>

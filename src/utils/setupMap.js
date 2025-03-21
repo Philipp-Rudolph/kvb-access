@@ -77,7 +77,13 @@ const setupMap = {
         if (onClickCallback) {
           onClickCallback(item)
         }
-        this.map.setView([item.geometry.coordinates[1], item.geometry.coordinates[0]], 18)
+        this.map.flyTo([item.geometry.coordinates[1], item.geometry.coordinates[0]], 16, {
+          animate: true,
+          duration: 1.5,
+          easeLinearity: 0.2,
+        })
+
+        // this.map.setView([item.geometry.coordinates[1], item.geometry.coordinates[0]], 16)
         console.log(marker)
       })
 
