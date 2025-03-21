@@ -96,6 +96,14 @@ const setupMap = {
         marker._icon.id = item.stationInfo.Haltestellenbereich
       }
 
+      marker.on('mouseover', () => {
+        marker.openPopup()
+      })
+
+      marker.on('mouseout', () => {
+        marker.closePopup()
+      })
+
       // if (type !== 'station') {
       //   this.markerClusterGroup.addLayer(marker)
       // }

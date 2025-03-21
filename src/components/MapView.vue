@@ -261,7 +261,7 @@ export default {
 .leaflet-popup-content-wrapper,
 .leaflet-popup-tip {
   background-color: #0000004f !important;
-  backdrop-filter: blur(10px);
+  backdrop-filter: blur(5px);
   color: #fff !important;
   border-radius: 0.5rem;
 }
