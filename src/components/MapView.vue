@@ -3,7 +3,7 @@
 
   <SearchBar v-if="!isLoading" :data="searchBarData" @selectStation="handleStationSelect" />
 
-  <transition name="zoom">
+  <transition name="zoom" @before-leave="beforeLeave" mode="out-in">
     <InfoModal v-if="isMarkerSelected" :data="selectedMarkerData" @close="closeMarkerSelection" />
   </transition>
 
@@ -94,6 +94,13 @@ export default {
     }
   },
   methods: {
+    beforeLeave(el) {
+      el.style.transition = 'opacity 0.3s ease'
+      el.style.opacity = 1
+      setTimeout(() => {
+        el.style.opacity = 0
+      }, 100) // Verzögerung, damit Vue es nicht sofort entfernt
+    },
     setupMarkers(stairs, elevators, stations) {
       this.markers.stairs = setupMap.addMarkers(
         stairs,
@@ -268,16 +275,21 @@ export default {
 }
 
 .leaflet-tile {
-  filter: brightness(3) contrast(1.1) !important;
+  filter: brightness(2.5) contrast(1.1) !important;
 }
 
 .zoom-enter-active,
 .zoom-leave-active {
-  transition: opacity 0.2s ease;
+  transition: opacity 0.3s ease;
 }
 
 .zoom-enter-from,
 .zoom-leave-to {
   opacity: 0;
+}
+
+.zoom-enter-to,
+.zoom-leave-from {
+  opacity: 1;
 }
 </style>
