@@ -163,6 +163,10 @@ export default {
   width: 100%;
 }
 
+.leaflet-container {
+  background-color: #000;
+}
+
 .icon,
 .leaflet-marker-icon {
   object-fit: contain;
