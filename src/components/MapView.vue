@@ -63,7 +63,7 @@ export default {
       this.mapIcons = {
         stairs: setupMap.createIcon('/assets/icons/escalator.png'),
         elevators: setupMap.createIcon('/assets/icons/elevator.png'),
-        stations: setupMap.createIcon('/assets/icons/train.png'),
+        stations: setupMap.createIcon('/icons/train.png'),
       }
 
       this.markerCluster = L.markerClusterGroup({
