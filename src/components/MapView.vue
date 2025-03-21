@@ -164,7 +164,7 @@ export default {
 }
 
 .leaflet-container {
-  background-color: #000;
+  background-color: #222 !important;
 }
 
 .icon,
