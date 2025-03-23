@@ -1,10 +1,10 @@
 <template>
   <div class="flex-wrapper collapsible">
-    <div class="header">
+    <div class="header" @click="toggleCollapse">
       <span class="spacer"></span>
       <p>Statistik</p>
       <!-- Chevron für das Ein- & Ausklappen -->
-      <div class="chevron" :class="{ collapse: localIsCollapsed }" @click="toggleCollapse">
+      <div class="chevron" :class="{ collapse: localIsCollapsed }">
         <div class="chevron--line"></div>
         <div class="chevron--line"></div>
       </div>
