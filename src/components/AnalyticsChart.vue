@@ -228,12 +228,6 @@ export default {
   flex-direction: column;
   align-items: center;
   gap: 0.5rem;
-
-  &:hover {
-    .circle-bg {
-      stroke: #fff;
-    }
-  }
 }
 
 .circular-chart {
@@ -242,7 +236,6 @@ export default {
 
 .circle-bg {
   fill: none;
-  stroke: #cdcdcd;
   stroke-width: 3.8;
   transition: stroke 0.3s;
 }
