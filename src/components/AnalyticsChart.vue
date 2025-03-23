@@ -155,8 +155,6 @@ export default {
 
   z-index: 1000;
 
-  transition: all 0.3s;
-
   &:hover {
     backdrop-filter: blur(5px);
   }
@@ -218,7 +216,7 @@ export default {
 .collapsible {
   overflow: hidden;
   max-height: 500px; /* Anpassbar */
-  transition: max-height 0.4s ease-in-out;
+  transition: all 0.4s ease-in-out;
 }
 
 .collapsible.collapsed {
@@ -308,16 +306,16 @@ export default {
 
 .data-table th,
 .data-table td {
-  border: 1px solid white;
+  /* border: 1px solid white; */
   padding: 8px;
   text-align: center;
 }
 
 .data-table th {
-  background: rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.1);
 }
 
-.data-table tr:nth-child(even) {
-  background: rgba(255, 255, 255, 0.1);
+.data-table tr {
+  background: rgba(255, 255, 255, 0.05);
 }
 </style>
