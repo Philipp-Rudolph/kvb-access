@@ -25,6 +25,8 @@
       :numOfElevatorsBroken="lenData.elevators"
       :numOfStations="lenData.stations"
       :numOfStationsBroken="markers.disorder"
+      @isCollapsed="isCollapsed = !isCollapsed"
+      :class="{ collapsed: isCollapsed }"
     />
   </transition>
 
@@ -42,14 +44,14 @@
 import L from 'leaflet'
 import 'leaflet.markercluster'
 
-// import utils
-import setupMap from '@/utils/setupMap'
-import fetchData from '@/utils/fetchData'
-import joinStationWithStairsAndElevators from '@/utils/joinStationWithStairsAndElevators'
+// import composables
+import setupMap from '@/composables/setupMap'
+import fetchData from '@/composables/fetchData'
+import joinStationWithStairsAndElevators from '@/composables/joinStationWithStairsAndElevators'
 
 // import components
 import InfoModal from '@/components/InfoModal.vue'
-import LoadingView from '@/components/LoadingView.vue'
+import LoadingView from '@/views/LoadingView.vue'
 import SearchBar from '@/components/SearchBar.vue'
 import AnalyticsChart from '@/components/AnalyticsChart.vue'
 
@@ -83,6 +85,7 @@ export default {
       fetchDataError: false,
       searchBarData: [],
       subText: '',
+      isCollapsed: false,
       lenData: {
         stairs: 0,
         elevators: 0,

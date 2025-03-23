@@ -1,5 +1,5 @@
 <template>
-  <div class="flex-wrapper">
+  <div class="flex-wrapper collapsible">
     <!-- Chevron für das Ein- & Ausklappen -->
     <div class="chevron" :class="{ collapse: isCollapsed }" @click="toggleCollapse">
       <div class="chevron--line"></div>
@@ -7,7 +7,7 @@
     </div>
 
     <!-- Der einklappbare Bereich -->
-    <div class="collapsible" :class="{ collapsed: isCollapsed }">
+    <div class="collapsible">
       <div class="chart-container">
         <div class="charts">
           <div class="single-chart" v-for="(chart, index) in charts" :key="index">
@@ -111,6 +111,8 @@ export default {
     toggleCollapse() {
       // this.$refs.chart.style.transform = `translateY(${this.isCollapsed ? 0 : 200}px)`
       this.isCollapsed = !this.isCollapsed
+      // emit isCollapsed value
+      this.$emit('isCollapsed', this.isCollapsed)
     },
   },
 }
@@ -161,7 +163,7 @@ export default {
   right: 24px;
   transition: transform 0.3s ease;
 
-  transform: rotate(180deg);
+  transform: rotate(0deg);
 
   &:hover {
     .chevron--line {
@@ -171,7 +173,7 @@ export default {
 }
 
 .chevron.collapse {
-  transform: rotate(0deg);
+  transform: rotate(180deg);
 }
 
 .chevron--line {
