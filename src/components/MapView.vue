@@ -4,53 +4,140 @@
   <SearchBar v-if="!isLoading" :data="searchBarData" @selectStation="handleStationSelect" />
 
   <transition name="zoom" @before-leave="beforeLeave" mode="out-in">
-    <InfoModal v-if="isMarkerSelected" :data="selectedMarkerData" @close="closeMarkerSelection" />
+    <InfoModal
+      v-if="isMarkerSelected"
+      :data="selectedMarkerData"
+      @close="closeMarkerSelection"
+      :markers="markers"
+    />
+  </transition>
+
+  <transition name="zoom" @before-leave="beforeLeave" mode="out-in">
+    <AnalyticsChart
+      v-if="!isLoading && !isMarkerSelected"
+      :numOfStairs="lenData.allStairs"
+      :numOfStairsBroken="lenData.stairs"
+      :numOfElevators="lenData.allElevators"
+      :numOfElevatorsBroken="lenData.elevators"
+      :numOfStations="lenData.stations"
+      :numOfStationsBroken="markers.disorder"
+    />
   </transition>
 
   <LoadingView v-if="isLoading" />
+
+  <LoadingView
+    v-if="!isLoading && !dataLoaded"
+    msg="Ein Fehler ist aufgetreten. Bitte versuchen Sie es später erneut."
+    :error="fetchDataError"
+  />
 </template>
 
 <script>
+// imoprt Libraries
 import L from 'leaflet'
 import 'leaflet.markercluster'
+
+// import utils
 import setupMap from '@/utils/setupMap'
 import fetchData from '@/utils/fetchData'
 import joinStationWithStairsAndElevators from '@/utils/joinStationWithStairsAndElevators'
-import InfoModal from './InfoModal.vue'
-import LoadingView from './LoadingView.vue'
-import SearchBar from './SearchBar.vue'
+
+// import components
+import InfoModal from '@/components/InfoModal.vue'
+import LoadingView from '@/components/LoadingView.vue'
+import SearchBar from '@/components/SearchBar.vue'
+import AnalyticsChart from '@/components/AnalyticsChart.vue'
+
+// import types
 import { MarkerTypes } from '@/types/MarkerTypes'
 
 const API_URL = import.meta.env.VITE_API_BASE_URL
 
 const DATA_URLS = {
   STAIRS: `${API_URL}/fahrtreppenstoerung/json`,
+  ALLSTAIRS: `${API_URL}/fahrtreppen/json`,
   ELEVATORS: `${API_URL}/aufzugsstoerung/json`,
+  ALLELEVATORS: `${API_URL}/aufzuege/json`,
   STATIONS: `${API_URL}/haltestellenbereiche/json`,
   STATION_LOCATIONS: `${API_URL}/haltestellen/json`,
 }
 
 export default {
   name: 'MapView',
-  components: { InfoModal, LoadingView, SearchBar },
+  components: { InfoModal, LoadingView, SearchBar, AnalyticsChart },
   data() {
     return {
       isMarkerSelected: false,
       selectedMarkerData: null,
       mapIcons: {},
-      markers: { stairs: null, elevators: null, stations: null },
+      markers: { stairs: null, elevators: null, stations: null, disorder: null },
       map: null,
       markerCluster: null,
       isLoading: true,
+      dataLoaded: false,
+      fetchDataError: false,
       searchBarData: [],
       subText: '',
+      lenData: {
+        stairs: 0,
+        elevators: 0,
+        stations: 0,
+        allStairs: 0,
+        allElevators: 0,
+      },
     }
   },
+
+  // Lifecycle
+  // Mounted
   async mounted() {
     try {
-      const [stairsData, elevatorsData, stationsData, stationLocations] = await Promise.all(
-        Object.values(DATA_URLS).map(fetchData),
-      )
+      const responses = await Promise.allSettled(Object.values(DATA_URLS).map(fetchData))
+
+      this.isLoading = false // Ladeanzeige beenden
+
+      const validResponses = responses.map((res, index) => {
+        if (res.status !== 'fulfilled' || !res.value || !res.value.features) {
+          console.error(
+            `Fehler bei ${Object.keys(DATA_URLS)[index]}:`,
+            res.reason || 'Leere Antwort',
+          )
+          return null // Markiere als ungültig
+        }
+        return res.value
+      })
+
+      if (validResponses.includes(null)) {
+        this.dataLoaded = false
+        this.fetchDataError = true
+      }
+
+      const [
+        stairsData,
+        allStairsData,
+        elevatorsData,
+        allElevatorsData,
+        stationsData,
+        stationLocations,
+      ] = validResponses
+
+      const [lenStairs, lenElevators, lenStations, lenAllStairs, lenAllElevators] = [
+        stairsData.features.length,
+        elevatorsData.features.length,
+        stationsData.features.length,
+        allStairsData.features.length,
+        allElevatorsData.features.length,
+      ]
+
+      this.lenData = {
+        stairs: lenStairs,
+        elevators: lenElevators,
+        stations: lenStations,
+        allStairs: lenAllStairs,
+        allElevators: lenAllElevators,
+      }
+
       const mergedData = joinStationWithStairsAndElevators(
         stationsData.features,
         stationLocations.features,
@@ -88,11 +175,18 @@ export default {
       )
       this.attachZoomListener()
 
-      this.subText = `Es gibt aktuell ${mergedData.mergedStairsData.length} Störungen an Fahrtreppen und ${mergedData.mergedElevatorData.length} Störungen an Aufzügen.`
+      this.markers.disorder = await this.getDisorderMarkers()
+      this.lenData.stations = await this.getStationMarkers()
+      this.dataLoaded = true
+    } catch {
+      this.isLoading = false
+      this.dataLoaded = false
     } finally {
       this.isLoading = false
     }
   },
+
+  // Methods
   methods: {
     beforeLeave(el) {
       el.style.transition = 'opacity 0.3s ease'
@@ -101,6 +195,7 @@ export default {
         el.style.opacity = 0
       }, 100) // Verzögerung, damit Vue es nicht sofort entfernt
     },
+
     setupMarkers(stairs, elevators, stations) {
       this.markers.stairs = setupMap.addMarkers(
         stairs,
@@ -142,16 +237,35 @@ export default {
           easeLinearity: 0.2,
         })
         this.handleMarkerClick(station.item, { type: { isStation: true } })
-        marker.openPopup()
-        marker._icon.style.opacity = 1
       }
     },
     handleMarkerClick(markerData, typeData) {
       this.isMarkerSelected = true
       this.selectedMarkerData = { ...markerData, ...typeData }
+      console.log(this.markers.stations)
     },
     closeMarkerSelection() {
       this.isMarkerSelected = false
+    },
+
+    async getDisorderMarkers() {
+      const stations = await this.markers.stations // Warte, bis das Promise aufgelöst ist
+      if (!stations || !Array.isArray(stations)) return 0
+
+      const disorderMarkers = stations.filter((marker) =>
+        marker._icon.classList.contains('disorder'),
+      )
+      return disorderMarkers.length
+    },
+
+    async getStationMarkers() {
+      const stations = await this.markers.stations
+      if (!stations || !Array.isArray(stations)) return 0
+
+      const stationMarkers = stations.filter((marker) =>
+        marker._icon.classList.contains('station-marker'),
+      )
+      return stationMarkers.length
     },
   },
 }
@@ -254,7 +368,6 @@ export default {
 }
 
 .icon:active {
-  transform: scale(1.1);
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
 }
 

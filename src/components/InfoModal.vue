@@ -110,6 +110,8 @@
 export default {
   props: {
     data: Object,
+    markers: Object,
+    map: Object,
   },
   data() {
     return {
@@ -160,12 +162,57 @@ export default {
     getIconSrc(type) {
       return type?.isStairs ? '/assets/icons/escalator.png' : '/assets/icons/elevator.png'
     },
+    isPromise(value) {
+      return value && typeof value.then === 'function'
+    },
     selectMarker(disorder) {
-      if (!this.markers || !disorder?.properties?.Kennung) return
+      console.log('selectMarker wurde aufgerufen!', disorder)
 
-      const marker = this.markers.find((m) => m.id === disorder.properties.Kennung)
-      if (marker && this.map) {
-        marker.openPopup()
+      if (!disorder?.properties?.Kennung) {
+        console.log('Kein Marker gefunden oder keine Kennung vorhanden')
+        return
+      }
+
+      let marker = null
+
+      // Durchlaufe alle Kategorien und suche nach dem Marker
+      for (const category in this.markers) {
+        // Überprüfe, ob es Marker in dieser Kategorie gibt
+        console.log('Kategorie:', category)
+
+        console.log(this.markers[category])
+
+        // Durchlaufe jedes Marker-Element innerhalb der Kategorie
+        for (const item in this.markers[category]) {
+          console.log('Marker:', item)
+
+          // Prüfe, ob die Kennung übereinstimmt
+          if (
+            item?.properties?.Kennung === disorder.properties.Kennung ||
+            item._icon?.id === disorder.properties.Kennung
+          ) {
+            marker = item // Marker gefunden
+            break // Beende die Schleife, wenn der Marker gefunden wurde
+          }
+        }
+
+        // Falls der Marker gefunden wurde, keine Notwendigkeit, weiter zu iterieren
+        if (marker) break
+      }
+
+      // Überprüfe, ob der Marker gefunden wurde
+      if (!marker) {
+        console.log('Marker nicht gefunden!')
+        return
+      }
+
+      // Wenn die Karte existiert, zentriere sie auf den Marker
+      if (this.map) {
+        console.log('Karte existiert, zentriere auf Marker:', marker)
+
+        this.$emit('close') // Optional: Modal schließen
+
+        marker.openPopup() // Öffnet das Popup des Markers
         this.map.flyTo(marker.getLatLng(), 16, {
           animate: true,
           duration: 1.5,

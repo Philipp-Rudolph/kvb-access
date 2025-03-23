@@ -1,11 +1,16 @@
 <template>
   <div>
     <div class="loading-container">
-      <div class="loading"></div>
+      <div class="loading" v-if="!error"></div>
       <div class="loading-spinner">
         <div class="loading-spinner-inner"></div>
       </div>
-      <p>please stand by, while I fetch the data 🙂‍↕️</p>
+      <p>{{ msg || 'Lade Daten ... ' }}</p>
+      <!-- <p v-else>
+        {{ error.msg }}
+        <br />
+        <button @click="$emit('retry')">Retry</button>
+      </p> -->
     </div>
   </div>
 </template>
@@ -16,6 +21,17 @@ export default {
   data() {
     return {}
   },
+  props: {
+    error: {
+      type: Object,
+      default: null,
+    },
+    msg: {
+      type: String,
+      default: '',
+    },
+  },
+  computed: {},
   methods: {},
   mounted() {},
 }
