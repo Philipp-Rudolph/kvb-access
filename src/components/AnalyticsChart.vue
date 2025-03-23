@@ -1,29 +1,34 @@
 <template>
   <div class="flex-wrapper">
-    <div class="chart-container">
-      <div class="charts">
-        <div class="single-chart" v-for="(chart, index) in charts" :key="index">
-          <svg viewBox="0 0 36 36" class="circular-chart">
-            <path
-              class="circle-bg"
-              d="M18 2.0845a 15.9155 15.9155 0 0 1 0 31.831a 15.9155 15.9155 0 0 1 0 -31.831"
-            />
-            <path
-              class="circle"
-              :stroke-dasharray="`${chart.percentage}, 100`"
-              :stroke="chart.strokeColor"
-              d="M18 2.0845a 15.9155 15.9155 0 0 1 0 31.831a 15.9155 15.9155 0 0 1 0 -31.831"
-            />
-          </svg>
-          <img :src="chart.icon" alt="icon" class="icon" />
-          <p>
-            {{ chart.number }} / {{ chart.total }} ({{ chart.percentage }}%) <br />
-            {{ chart.label }}
-          </p>
+    <!-- Chevron für das Ein- & Ausklappen -->
+    <div class="chevron" :class="{ collapse: isCollapsed }" @click="toggleCollapse">
+      <div class="chevron--line"></div>
+      <div class="chevron--line"></div>
+    </div>
+
+    <!-- Der einklappbare Bereich -->
+    <div class="collapsible" :class="{ collapsed: isCollapsed }">
+      <div class="chart-container">
+        <div class="charts">
+          <div class="single-chart" v-for="(chart, index) in charts" :key="index">
+            <svg viewBox="0 0 36 36" class="circular-chart">
+              <path
+                class="circle-bg"
+                d="M18 2.0845a 15.9155 15.9155 0 0 1 0 31.831a 15.9155 15.9155 0 0 1 0 -31.831"
+              />
+              <path
+                class="circle"
+                :stroke-dasharray="`${chart.percentage}, 100`"
+                :stroke="chart.strokeColor"
+                d="M18 2.0845a 15.9155 15.9155 0 0 1 0 31.831a 15.9155 15.9155 0 0 1 0 -31.831"
+              />
+            </svg>
+            <img :src="chart.icon" alt="icon" class="icon" />
+          </div>
         </div>
       </div>
 
-      <!-- Tabelle für die Daten
+      <!-- Tabelle -->
       <table class="data-table">
         <thead>
           <tr>
@@ -41,7 +46,7 @@
             <td :style="{ color: chart.strokeColor }">{{ chart.percentage }}%</td>
           </tr>
         </tbody>
-      </table> -->
+      </table>
     </div>
   </div>
 </template>
@@ -57,20 +62,23 @@ export default {
     numOfStations: { type: Number, required: true },
     numOfStationsBroken: { type: Number, required: true },
   },
+  data: () => ({
+    isCollapsed: false,
+  }),
   computed: {
     percentageStairsBroken() {
-      return Math.ceil((this.numOfStairsBroken / this.numOfStairs) * 100)
+      return Math.abs(Math.ceil((this.numOfStairsBroken / this.numOfStairs) * 100) - 100)
     },
     percentageElevatorsBroken() {
-      return Math.ceil((this.numOfElevatorsBroken / this.numOfElevators) * 100)
+      return Math.abs(Math.ceil((this.numOfElevatorsBroken / this.numOfElevators) * 100) - 100)
     },
     percentageStationsBroken() {
-      return Math.ceil((this.numOfStationsBroken / this.numOfStations) * 100)
+      return Math.abs(Math.ceil((this.numOfStationsBroken / this.numOfStations) * 100) - 100)
     },
     charts() {
       return [
         {
-          label: 'Rolltreppen defekt',
+          label: 'Rolltreppen in Betrieb',
           percentage: this.percentageStairsBroken,
           number: this.numOfStairsBroken,
           total: this.numOfStairs,
@@ -86,7 +94,7 @@ export default {
         //   icon: '/assets/icons/train.png',
         // },
         {
-          label: 'Aufzüge defekt',
+          label: 'Aufzüge in Betrieb',
           percentage: this.percentageElevatorsBroken,
           number: this.numOfElevatorsBroken,
           total: this.numOfElevators,
@@ -98,7 +106,11 @@ export default {
   },
   methods: {
     getStrokeColor(percentage) {
-      return percentage > 66 ? 'red' : percentage > 33 ? 'orange' : 'green'
+      return percentage < 33 ? 'red' : percentage < 66 ? 'orange' : '#00bd7e'
+    },
+    toggleCollapse() {
+      // this.$refs.chart.style.transform = `translateY(${this.isCollapsed ? 0 : 200}px)`
+      this.isCollapsed = !this.isCollapsed
     },
   },
 }
@@ -109,6 +121,7 @@ export default {
   display: flex;
   justify-content: center;
   align-items: center;
+  flex-direction: column;
   padding: 20px;
   background: rgba(0, 0, 0, 0.6);
   backdrop-filter: blur(1.5px);
@@ -116,6 +129,8 @@ export default {
   color: white;
   text-align: center;
   max-width: 500px;
+  width: 100%;
+  height: auto;
   margin: auto;
 
   position: absolute;
@@ -134,15 +149,71 @@ export default {
   }
 }
 
+/* Chevron Button */
+.chevron {
+  width: 32px;
+  height: 32px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: absolute;
+  top: 8px;
+  right: 24px;
+  transition: transform 0.3s ease;
+
+  transform: rotate(180deg);
+
+  &:hover {
+    .chevron--line {
+      background-color: #00bd7e;
+    }
+  }
+}
+
+.chevron.collapse {
+  transform: rotate(0deg);
+}
+
+.chevron--line {
+  position: absolute;
+  width: 14px;
+  height: 3px;
+  background-color: white;
+  border-radius: 2px;
+  transition: background-color 0.2s;
+
+  &:nth-child(1) {
+    transform: rotate(45deg) translate(3px, 0px);
+  }
+
+  &:nth-child(2) {
+    transform: rotate(-45deg) translate(-6px, -3px);
+  }
+}
+
+/* Einklappbare Sektion */
+.collapsible {
+  overflow: hidden;
+  max-height: 500px; /* Anpassbar */
+  transition: max-height 0.4s ease-in-out;
+}
+
+.collapsible.collapsed {
+  max-height: 0;
+}
 .chart-container {
   width: 100%;
+  height: 100%;
   display: flex;
   flex-direction: column;
-  gap: 1rem;
+  /* gap: 1rem; */
   padding: 1rem;
 }
 
 .charts {
+  height: 100%;
+  width: 100%;
   display: flex;
   justify-content: space-around;
   align-items: center;
@@ -150,10 +221,18 @@ export default {
 }
 
 .single-chart {
+  height: 100%;
+  width: 100%;
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 0.5rem;
+
+  &:hover {
+    .circle-bg {
+      stroke: #fff;
+    }
+  }
 }
 
 .circular-chart {
@@ -164,6 +243,7 @@ export default {
   fill: none;
   stroke: #cdcdcd;
   stroke-width: 3.8;
+  transition: stroke 0.3s;
 }
 
 .circle {
@@ -200,6 +280,15 @@ export default {
   width: 100%;
   margin-top: 1rem;
   border-collapse: collapse;
+  border-spacing: 0;
+  border-radius: 1rem;
+  overflow: hidden;
+  /* remove outline */
+  outline: none;
+  border: 1px solid white;
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(1.5px);
 }
 
 .data-table th,
