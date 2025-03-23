@@ -314,7 +314,7 @@ export default {
 }
 
 .close-button:hover .close-button--line {
-  background-color: rgb(255, 0, 0, 0.5);
+  background-color: #00bd7e;
 }
 
 .call-outs {

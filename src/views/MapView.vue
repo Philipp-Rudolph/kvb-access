@@ -27,6 +27,7 @@
       :numOfStationsBroken="markers.disorder"
       @isCollapsed="isCollapsed = !isCollapsed"
       :class="{ collapsed: isCollapsed }"
+      :isCollapsed="isCollapsed"
     />
   </transition>
 

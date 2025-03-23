@@ -1,7 +1,7 @@
 <template>
   <div class="flex-wrapper collapsible">
     <!-- Chevron für das Ein- & Ausklappen -->
-    <div class="chevron" :class="{ collapse: isCollapsed }" @click="toggleCollapse">
+    <div class="chevron" :class="{ collapse: localIsCollapsed }" @click="toggleCollapse">
       <div class="chevron--line"></div>
       <div class="chevron--line"></div>
     </div>
@@ -61,10 +61,18 @@ export default {
     numOfElevatorsBroken: { type: Number, required: true },
     numOfStations: { type: Number, required: true },
     numOfStationsBroken: { type: Number, required: true },
+    isCollapsed: { type: Boolean, default: false }, // ✅ isCollapsed als Prop
   },
-  data: () => ({
-    isCollapsed: false,
-  }),
+  data() {
+    return {
+      localIsCollapsed: this.isCollapsed, // ✅ Zugriff auf Prop über `this`
+    }
+  },
+  watch: {
+    isCollapsed(newVal) {
+      this.localIsCollapsed = newVal // ✅ Synchronisieren, falls sich der Wert von außen ändert
+    },
+  },
   computed: {
     percentageStairsBroken() {
       return Math.abs(Math.ceil((this.numOfStairsBroken / this.numOfStairs) * 100) - 100)
@@ -105,14 +113,14 @@ export default {
     },
   },
   methods: {
-    getStrokeColor(percentage) {
-      return percentage < 33 ? 'red' : percentage < 66 ? 'orange' : '#00bd7e'
-    },
     toggleCollapse() {
-      // this.$refs.chart.style.transform = `translateY(${this.isCollapsed ? 0 : 200}px)`
-      this.isCollapsed = !this.isCollapsed
-      // emit isCollapsed value
-      this.$emit('isCollapsed', this.isCollapsed)
+      this.localIsCollapsed = !this.localIsCollapsed
+      this.$emit('isCollapsed', this.localIsCollapsed) // ✅ Event an Parent senden
+    },
+    getStrokeColor(percentage) {
+      if (percentage > 80) return '#00bd7e'
+      if (percentage > 60) return '#ffcc00'
+      return '#ff0000'
     },
   },
 }
