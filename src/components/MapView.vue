@@ -1,7 +1,11 @@
 <template>
   <div ref="mapContainer" id="map"></div>
 
-  <SearchBar v-if="!isLoading" :data="searchBarData" @selectStation="handleStationSelect" />
+  <SearchBar
+    v-if="!isLoading && !isMarkerSelected"
+    :data="searchBarData"
+    @selectStation="handleStationSelect"
+  />
 
   <transition name="zoom" @before-leave="beforeLeave" mode="out-in">
     <InfoModal
