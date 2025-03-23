@@ -77,14 +77,14 @@ export default {
           strokeColor: this.getStrokeColor(this.percentageStairsBroken),
           icon: '/assets/icons/escalator.png',
         },
-        {
-          label: 'Haltestellen betroffen',
-          percentage: this.percentageStationsBroken,
-          number: this.numOfStationsBroken,
-          total: this.numOfStations,
-          strokeColor: this.getStrokeColor(this.percentageStationsBroken),
-          icon: '/assets/icons/train.png',
-        },
+        // {
+        //   label: 'Haltestellen betroffen',
+        //   percentage: this.percentageStationsBroken,
+        //   number: this.numOfStationsBroken,
+        //   total: this.numOfStations,
+        //   strokeColor: this.getStrokeColor(this.percentageStationsBroken),
+        //   icon: '/assets/icons/train.png',
+        // },
         {
           label: 'Aufzüge defekt',
           percentage: this.percentageElevatorsBroken,
