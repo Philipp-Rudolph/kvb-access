@@ -33,19 +33,17 @@
   />
 </template>
 
-<script>
+<script lang="ts">
 // imoprt Libraries
-import L from 'leaflet'
-import 'leaflet.markercluster'
 
 // import utils
-import setupMap from '@/utils/setupMap'
-import fetchData from '@/utils/fetchData'
-import joinStationWithStairsAndElevators from '@/utils/joinStationWithStairsAndElevators'
+import setupMap from '@/composables/setupMap'
+import fetchData from '@/composables/fetchData'
+import joinStationWithStairsAndElevators from '@/composables/joinStationWithStairsAndElevators'
 
 // import components
 import InfoModal from '@/components/InfoModal.vue'
-import LoadingView from '@/components/LoadingView.vue'
+import LoadingView from '@/views/LoadingView.vue'
 import SearchBar from '@/components/SearchBar.vue'
 import AnalyticsChart from '@/components/AnalyticsChart.vue'
 
@@ -73,7 +71,6 @@ export default {
       mapIcons: {},
       markers: { stairs: null, elevators: null, stations: null, disorder: null },
       map: null,
-      markerCluster: null,
       isLoading: true,
       dataLoaded: false,
       fetchDataError: false,
@@ -98,13 +95,19 @@ export default {
       this.isLoading = false // Ladeanzeige beenden
 
       const validResponses = responses.map((res, index) => {
-        if (res.status !== 'fulfilled' || !res.value || !res.value.features) {
+        if (res.status === 'rejected') {
           console.error(
             `Fehler bei ${Object.keys(DATA_URLS)[index]}:`,
             res.reason || 'Leere Antwort',
           )
-          return null // Markiere als ungültig
+          return null
         }
+
+        if (!res.value || !res.value.features) {
+          console.error(`Fehler bei ${Object.keys(DATA_URLS)[index]}:`, 'Leere Antwort')
+          return null
+        }
+
         return res.value
       })
 
@@ -153,21 +156,7 @@ export default {
         stations: setupMap.createIcon('/icons/train.png'),
       }
 
-      this.markerCluster = L.markerClusterGroup({
-        spiderfyOnMaxZoom: false,
-        showCoverageOnHover: false,
-        zoomToBoundsOnClick: true,
-        maxClusterRadius: (zoom) => (zoom < 10 ? 80 : zoom < 15 ? 50 : 25),
-        iconCreateFunction: (cluster) =>
-          L.divIcon({
-            html: `<div class="cluster-marker">${cluster.getChildCount()}</div>`,
-            className: 'cluster-marker disorder',
-            iconSize: [40, 40],
-          }),
-        disableClusteringAtZoom: 10,
-      })
-
-      this.map = setupMap.init(this.$refs.mapContainer, this.markerCluster)
+      this.map = setupMap.init(this.$refs.mapContainer)
       this.setupMarkers(
         mergedData.mergedStairsData,
         mergedData.mergedElevatorData,
@@ -220,7 +209,9 @@ export default {
       const updateMarkersVisibility = () => {
         const zoomLevel = this.map.getZoom()
         document.querySelectorAll('.stairs-marker, .elevator-marker').forEach((marker) => {
-          marker.style.visibility = zoomLevel < 16 ? 'hidden' : 'visible'
+          if (marker instanceof HTMLElement) {
+            marker.style.visibility = zoomLevel < 16 ? 'hidden' : 'visible'
+          }
         })
       }
       updateMarkersVisibility()

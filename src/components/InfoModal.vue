@@ -106,7 +106,7 @@
   </div>
 </template>
 
-<script>
+<script lang="ts">
 export default {
   props: {
     data: Object,
@@ -181,18 +181,15 @@ export default {
         console.log('Kategorie:', category)
 
         console.log(this.markers[category])
-
-        // Durchlaufe jedes Marker-Element innerhalb der Kategorie
-        for (const item in this.markers[category]) {
+        for (const item of this.markers[category]) {
           console.log('Marker:', item)
 
-          // Prüfe, ob die Kennung übereinstimmt
           if (
             item?.properties?.Kennung === disorder.properties.Kennung ||
             item._icon?.id === disorder.properties.Kennung
           ) {
             marker = item // Marker gefunden
-            break // Beende die Schleife, wenn der Marker gefunden wurde
+            break
           }
         }
 

@@ -2,18 +2,16 @@ import L from 'leaflet'
 
 const setupMap = {
   map: null,
-  markerClusterGroup: null,
 
   /**
    *
    * @param {*} containerId
-   * @param {*} initialCoordinates
+   * @param {*} initialCoordinates: [latitude, longitude]
    * @param {int} zoomLevel
    * @returns
    */
-  init(containerId, markerCluster, initialCoordinates = [50.9413, 6.9583], zoomLevel = 13) {
+  init(containerId, initialCoordinates: [latitude, longitude] = [50.9413, 6.9583], zoomLevel = 13) {
     this.map = L.map(containerId).setView(initialCoordinates, zoomLevel)
-    this.markerClusterGroup = markerCluster
 
     // Add OpenStreetMap tiles
     L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
@@ -22,7 +20,6 @@ const setupMap = {
       subdomains: 'abcd',
       maxZoom: 19,
     }).addTo(this.map)
-    // this.map.addLayer(this.markerClusterGroup)
 
     return this.map
   },
@@ -104,14 +101,9 @@ const setupMap = {
         marker.closePopup()
       })
 
-      // if (type !== 'station') {
-      //   this.markerClusterGroup.addLayer(marker)
-      // }
-
       return marker
     })
 
-    // this.map.addLayer(this.markerClusterGroup)
     return markers
   },
 

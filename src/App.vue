@@ -1,5 +1,5 @@
-<script setup>
-import MapView from './components/MapView.vue'
+<script setup lang="ts">
+import MapView from '@/views/MapView.vue'
 </script>
 
 <template>
