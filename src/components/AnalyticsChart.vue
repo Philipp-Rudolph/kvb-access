@@ -1,9 +1,13 @@
 <template>
   <div class="flex-wrapper collapsible">
-    <!-- Chevron für das Ein- & Ausklappen -->
-    <div class="chevron" :class="{ collapse: localIsCollapsed }" @click="toggleCollapse">
-      <div class="chevron--line"></div>
-      <div class="chevron--line"></div>
+    <div class="header">
+      <span class="spacer"></span>
+      <p>Statistik</p>
+      <!-- Chevron für das Ein- & Ausklappen -->
+      <div class="chevron" :class="{ collapse: localIsCollapsed }" @click="toggleCollapse">
+        <div class="chevron--line"></div>
+        <div class="chevron--line"></div>
+      </div>
     </div>
 
     <!-- Der einklappbare Bereich -->
@@ -61,16 +65,16 @@ export default {
     numOfElevatorsBroken: { type: Number, required: true },
     numOfStations: { type: Number, required: true },
     numOfStationsBroken: { type: Number, required: true },
-    isCollapsed: { type: Boolean, default: false }, // ✅ isCollapsed als Prop
+    isCollapsed: { type: Boolean, default: true },
   },
   data() {
     return {
-      localIsCollapsed: this.isCollapsed, // ✅ Zugriff auf Prop über `this`
+      localIsCollapsed: this.isCollapsed,
     }
   },
   watch: {
     isCollapsed(newVal) {
-      this.localIsCollapsed = newVal // ✅ Synchronisieren, falls sich der Wert von außen ändert
+      this.localIsCollapsed = newVal
     },
   },
   computed: {
@@ -158,6 +162,18 @@ export default {
   }
 }
 
+.header {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 1rem;
+
+  .spacer {
+    width: 32px;
+  }
+}
+
 /* Chevron Button */
 .chevron {
   width: 32px;
@@ -166,9 +182,6 @@ export default {
   display: flex;
   align-items: center;
   justify-content: center;
-  position: absolute;
-  top: 8px;
-  right: 24px;
   transition: transform 0.3s ease;
 
   transform: rotate(180deg);

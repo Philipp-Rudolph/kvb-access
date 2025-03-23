@@ -86,7 +86,7 @@ export default {
       fetchDataError: false,
       searchBarData: [],
       subText: '',
-      isCollapsed: false,
+      isCollapsed: true,
       lenData: {
         stairs: 0,
         elevators: 0,
