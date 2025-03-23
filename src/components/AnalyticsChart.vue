@@ -163,7 +163,7 @@ export default {
   right: 24px;
   transition: transform 0.3s ease;
 
-  transform: rotate(0deg);
+  transform: rotate(180deg);
 
   &:hover {
     .chevron--line {
@@ -173,7 +173,7 @@ export default {
 }
 
 .chevron.collapse {
-  transform: rotate(180deg);
+  transform: rotate(0deg);
 }
 
 .chevron--line {
