@@ -103,7 +103,7 @@ export default {
           strokeColor: this.getStrokeColor(
             this.percentageBroken(this.numOfStationsBroken, this.numOfStations),
           ),
-          icon: '/assets/icons/train.png',
+          icon: '/icons/train.png',
         },
         {
           label: 'Rolltreppen',
