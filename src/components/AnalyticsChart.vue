@@ -39,12 +39,14 @@
             <th>Kategorie</th>
             <th>Defekt</th>
             <th>Gesamt</th>
-            <th>Prozent</th>
+            <th>In Betrieb</th>
           </tr>
         </thead>
         <tbody>
           <tr v-for="(chart, index) in charts" :key="index">
-            <td>{{ chart.label }}</td>
+            <td class="data-table--label">
+              <small>{{ chart.label }}</small>
+            </td>
             <td>{{ chart.number }}</td>
             <td>{{ chart.total }}</td>
             <td :style="{ color: chart.strokeColor }">{{ chart.percentage }}%</td>
@@ -78,45 +80,58 @@ export default {
     },
   },
   computed: {
-    percentageStairsBroken() {
-      return Math.abs(Math.ceil((this.numOfStairsBroken / this.numOfStairs) * 100) - 100)
-    },
-    percentageElevatorsBroken() {
-      return Math.abs(Math.ceil((this.numOfElevatorsBroken / this.numOfElevators) * 100) - 100)
-    },
-    percentageStationsBroken() {
-      return Math.abs(Math.ceil((this.numOfStationsBroken / this.numOfStations) * 100) - 100)
-    },
+    // async percentageBroken(brokenItems, totalItems) {
+    //   console.log(brokenItems, totalItems)
+    //   return Math.abs(Math.ceil((brokenItems / totalItems) * 100) - 100)
+    // },
+    // percentageStairsBroken() {
+    //   return Math.abs(Math.ceil((this.numOfStairsBroken / this.numOfStairs) * 100) - 100)
+    // },
+    // percentageElevatorsBroken() {
+    //   return Math.abs(Math.ceil((this.numOfElevatorsBroken / this.numOfElevators) * 100) - 100)
+    // },
+    // percentageStationsBroken() {
+    //   return Math.abs(Math.ceil((this.numOfStationsBroken / this.numOfStations) * 100) - 100)
+    // },
     charts() {
       return [
         {
-          label: 'Rolltreppen in Betrieb',
-          percentage: this.percentageStairsBroken,
+          label: 'Haltestellen',
+          percentage: this.percentageBroken(this.numOfStationsBroken, this.numOfStations),
+          number: this.numOfStationsBroken,
+          total: this.numOfStations,
+          strokeColor: this.getStrokeColor(
+            this.percentageBroken(this.numOfStationsBroken, this.numOfStations),
+          ),
+          icon: '/assets/icons/train.png',
+        },
+        {
+          label: 'Rolltreppen',
+          percentage: this.percentageBroken(this.numOfStairsBroken, this.numOfStairs),
           number: this.numOfStairsBroken,
           total: this.numOfStairs,
-          strokeColor: this.getStrokeColor(this.percentageStairsBroken),
+          strokeColor: this.getStrokeColor(
+            this.percentageBroken(this.numOfStairsBroken, this.numOfStairs),
+          ),
           icon: '/assets/icons/escalator.png',
         },
-        // {
-        //   label: 'Haltestellen betroffen',
-        //   percentage: this.percentageStationsBroken,
-        //   number: this.numOfStationsBroken,
-        //   total: this.numOfStations,
-        //   strokeColor: this.getStrokeColor(this.percentageStationsBroken),
-        //   icon: '/assets/icons/train.png',
-        // },
         {
-          label: 'Aufzüge in Betrieb',
-          percentage: this.percentageElevatorsBroken,
+          label: 'Aufzüge',
+          percentage: this.percentageBroken(this.numOfElevatorsBroken, this.numOfElevators),
           number: this.numOfElevatorsBroken,
           total: this.numOfElevators,
-          strokeColor: this.getStrokeColor(this.percentageElevatorsBroken),
+          strokeColor: this.getStrokeColor(
+            this.percentageBroken(this.numOfElevatorsBroken, this.numOfElevators),
+          ),
           icon: '/assets/icons/elevator.png',
         },
       ]
     },
   },
   methods: {
+    percentageBroken(brokenItems, totalItems) {
+      return Math.abs(Math.ceil((brokenItems / totalItems) * 100) - 100)
+    },
     toggleCollapse() {
       this.localIsCollapsed = !this.localIsCollapsed
       this.$emit('isCollapsed', this.localIsCollapsed) // ✅ Event an Parent senden
@@ -217,6 +232,7 @@ export default {
   overflow: hidden;
   max-height: 500px; /* Anpassbar */
   transition: all 0.4s ease-in-out;
+  width: 100%;
 }
 
 .collapsible.collapsed {
@@ -291,17 +307,14 @@ export default {
 /* Tabelle Styling */
 .data-table {
   width: 100%;
-  margin-top: 1rem;
   border-collapse: collapse;
-  border-spacing: 0;
   border-radius: 1rem;
   overflow: hidden;
-  /* remove outline */
-  outline: none;
-  border: 1px solid white;
   box-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
-  background: rgba(0, 0, 0, 0.6);
-  backdrop-filter: blur(1.5px);
+
+  &--label {
+    text-align: left;
+  }
 }
 
 .data-table th,
@@ -313,6 +326,7 @@ export default {
 
 .data-table th {
   background: rgba(255, 255, 255, 0.1);
+  font-weight: 400;
 }
 
 .data-table tr {

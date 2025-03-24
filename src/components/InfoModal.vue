@@ -241,7 +241,8 @@ export default {
 }
 
 .modal-content {
-  background: #222;
+  /* background: #222; */
+  backdrop-filter: blur(8px);
   padding: 0; /* Padding wird von Header und Body übernommen */
   border-radius: 10px;
   max-width: 500px;
