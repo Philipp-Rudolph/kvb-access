@@ -107,8 +107,9 @@ export default {
   font-size: 1rem;
 
   border-radius: 5px;
-  background-color: rgba(0, 0, 0, 0.5);
-  backdrop-filter: blur(5px);
+  background-color: #222;
+  /* background-color: rgba(0, 0, 0, 0.5); */
+  /* backdrop-filter: blur(5px); */
   color: white;
   outline: none;
   border: none;
@@ -137,15 +138,17 @@ export default {
   padding: 15px;
   margin-top: 10px;
   border-radius: 5px;
-  background-color: rgba(255, 255, 255, 0.05);
-  backdrop-filter: blur(5px);
+  /* background-color: rgba(255, 255, 255, 0.05); */
+  /* background-color: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(5px); */
+  background-color: #222;
   color: white;
   cursor: pointer;
   transition: background-color 0.3s ease-out;
   text-align: center;
 
   &:hover {
-    background-color: rgba(255, 255, 255, 0.1);
+    background-color: #333;
   }
 }
 </style>

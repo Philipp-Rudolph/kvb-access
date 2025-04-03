@@ -16,13 +16,12 @@ const setupMap = {
     this.markerClusterGroup = markerCluster
 
     // Add OpenStreetMap tiles
-    L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
-      attribution:
-        '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/">CARTO</a>',
-      subdomains: 'abcd',
+    const tileLayer = L.tileLayer('https://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png', {
       maxZoom: 19,
-    }).addTo(this.map)
-    // this.map.addLayer(this.markerClusterGroup)
+      attribution:
+        '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, Tiles style by <a href="https://www.hotosm.org/" target="_blank">Humanitarian OpenStreetMap Team</a> hosted by <a href="https://openstreetmap.fr/" target="_blank">OpenStreetMap France</a>',
+    })
+    tileLayer.addTo(this.map)
 
     return this.map
   },
@@ -52,6 +51,7 @@ const setupMap = {
    */
   async addMarkers(data, icon, type, onClickCallback) {
     const markers = data.map((item) => {
+      // Create the marker instance in one go
       const marker = L.marker([item.geometry.coordinates[1], item.geometry.coordinates[0]], {
         icon,
         title: item.properties.Bezeichnung || item.properties.Name,
@@ -103,10 +103,6 @@ const setupMap = {
       marker.on('mouseout', () => {
         marker.closePopup()
       })
-
-      // if (type !== 'station') {
-      //   this.markerClusterGroup.addLayer(marker)
-      // }
 
       return marker
     })

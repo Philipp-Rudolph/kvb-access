@@ -400,7 +400,8 @@ export default {
 }
 
 .leaflet-tile {
-  filter: brightness(2.5) contrast(1.1) !important;
+  /* filter: brightness(2.5) contrast(1.1) !important; */
+  filter: grayscale(1) !important;
 }
 
 .zoom-enter-active,

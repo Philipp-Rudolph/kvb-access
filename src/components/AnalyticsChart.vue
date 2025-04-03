@@ -152,8 +152,9 @@ export default {
   align-items: center;
   flex-direction: column;
   padding: 20px;
-  background: rgba(0, 0, 0, 0.6);
-  backdrop-filter: blur(1.5px);
+  background-color: #222;
+  /* background: rgba(0, 0, 0, 0.6); */
+  /* backdrop-filter: blur(1.5px); */
   border-radius: 5px 5px 0 0;
   color: white;
   text-align: center;
