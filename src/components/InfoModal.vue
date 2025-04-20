@@ -2,9 +2,10 @@
   <div v-if="data" class="modal-overlay" @click.self="$emit('close')">
     <div class="modal-content">
       <div class="modal-header">
-        <h1 v-if="isStation">Haltestelle {{ data.properties.Name }}</h1>
+        <h1 v-if="isStation && !showStats">Haltestelle {{ data.properties.Name }}</h1>
         <h1 v-else-if="isStairs">Rolltreppe defekt</h1>
         <h1 v-else-if="isElevator">Aufzug defekt</h1>
+        <h1 v-else-if="showStats">Statistik Übersicht</h1>
         <button @click="$emit('close')" class="close-button">
           <span class="close-button--line"></span>
           <span class="close-button--line"></span>
@@ -12,94 +13,94 @@
       </div>
 
       <div class="modal-body">
-        <template v-if="!isStation">
-          <p class="description call-out call-out--alert">
-            {{ isStairs ? 'Diese Rolltreppe' : 'Dieser Aufzug' }}
-            {{ data.properties.Bezeichnung }} ist defekt
-          </p>
-          <p>Zuletzt aktualisiert: {{ formatDate(data.properties.timestamp) }}</p>
-        </template>
-
-        <template v-else>
-          <div class="call-outs">
-            <p v-if="data.hasDisorder" class="description call-out call-out--alert">
-              An dieser Haltestelle gibt es Störungen
-              <template v-if="totalNumberOfEscalators > 0 && totalNumberOfElevators > 0">
-                an
-                {{ totalNumberOfEscalators > 1 ? totalNumberOfEscalators : 'einer' }} Rolltreppe{{
-                  totalNumberOfEscalators > 1 ? 'n' : ''
-                }}
-                und
-                {{
-                  totalNumberOfElevators > 1 ? totalNumberOfElevators + 'Aufzügen' : 'einem Aufzug'
-                }}.
-              </template>
-              <template v-else-if="totalNumberOfEscalators > 0">
-                an
-                {{ totalNumberOfEscalators > 1 ? totalNumberOfEscalators : 'einer' }} Rolltreppe{{
-                  totalNumberOfEscalators > 1 ? 'n' : ''
-                }}.
-              </template>
-              <template v-else-if="totalNumberOfElevators > 0">
-                an
-                {{
-                  totalNumberOfElevators > 1 ? totalNumberOfElevators + 'Aufzügen' : 'einem Aufzug'
-                }}.
-              </template>
-            </p>
-
-            <p v-else class="description call-out call-out--info">
-              An dieser Haltestelle gibt es keine Störungen an Rolltreppen oder Aufzügen.
-            </p>
-
-            <p class="description call-out call-out--info" v-if="data.stationInfo.Lageplan">
-              Laden Sie <a :href="data.stationInfo.Lageplan" target="_blank">hier</a> den Lageplan
-              der Haltestelle herunter.
-            </p>
-          </div>
-        </template>
-
-        <div v-if="data.hasDisorder" class="disorder-list">
-          <h2>{{ totalNumberOfDisorders }} Störung{{ totalNumberOfDisorders > 1 ? 'en' : '' }}</h2>
-          <a
-            :href="'#' + disorder.properties.Kennung"
-            @click.prevent="selectMarker(disorder)"
-            v-for="disorder in data.disorders"
-            :key="disorder.id"
-            class="disorder-item"
-          >
-            <img :src="getIconSrc(disorder.type)" alt="" class="disorder-icon" />
-            <div class="disorder-info">
-              <h3>
-                {{ disorder.type.isStairs ? 'Rolltreppe' : 'Aufzug' }}
-                {{ disorder.properties.Bezeichnung }} defekt
-              </h3>
-              <p>Zuletzt aktualisiert: {{ formatDate(disorder.properties.timestamp) }}</p>
-            </div>
-          </a>
+        <!-- Analytics chart section -->
+        <div v-if="showStats" class="stats-section">
+          <AnalyticsChart :numOfStairs="numOfStairs" :numOfStairsBroken="numOfStairsBroken"
+            :numOfElevators="numOfElevators" :numOfElevatorsBroken="numOfElevatorsBroken" :numOfStations="numOfStations"
+            :numOfStationsBroken="numOfStationsBroken" :isCollapsed="false" />
         </div>
 
-        <template v-if="data.properties.Linien">
-          <div class="description lines-info">
-            <p>
-              {{
-                data.properties.Linien.length > 1
-                  ? 'Hier fahren die Linien'
-                  : 'Hier fährt die Linie'
-              }}
+        <!-- Nur anzeigen, wenn keine Statistik angezeigt wird -->
+        <template v-if="!showStats">
+          <template v-if="!isStation">
+            <p class="description call-out call-out--alert">
+              {{ isStairs ? 'Diese Rolltreppe' : 'Dieser Aufzug' }}
+              {{ data.properties.Bezeichnung }} ist defekt
             </p>
-            <div>
-              <span
-                v-for="(linie, index) in data.properties.Linien.split(' ')"
-                :key="index"
-                class="lines"
-                :class="[`line-${linie}`]"
-                :style="{ backgroundColor: linienFarben[linie] || '#ccc', color: '#fff' }"
-              >
-                {{ linie }}
-              </span>
+            <p>Zuletzt aktualisiert: {{ formatDate(data.properties.timestamp) }}</p>
+          </template>
+
+          <template v-else>
+            <div class="call-outs">
+              <p v-if="data.hasDisorder" class="description call-out call-out--alert">
+                An dieser Haltestelle gibt es Störungen
+                <template v-if="totalNumberOfEscalators > 0 && totalNumberOfElevators > 0">
+                  an
+                  {{ totalNumberOfEscalators > 1 ? totalNumberOfEscalators : 'einer' }} Rolltreppe{{
+                    totalNumberOfEscalators > 1 ? 'n' : ''
+                  }}
+                  und
+                  {{
+                    totalNumberOfElevators > 1 ? totalNumberOfElevators + 'Aufzügen' : 'einem Aufzug'
+                  }}.
+                </template>
+                <template v-else-if="totalNumberOfEscalators > 0">
+                  an
+                  {{ totalNumberOfEscalators > 1 ? totalNumberOfEscalators : 'einer' }} Rolltreppe{{
+                    totalNumberOfEscalators > 1 ? 'n' : ''
+                  }}.
+                </template>
+                <template v-else-if="totalNumberOfElevators > 0">
+                  an
+                  {{
+                    totalNumberOfElevators > 1 ? totalNumberOfElevators + 'Aufzügen' : 'einem Aufzug'
+                  }}.
+                </template>
+              </p>
+
+              <p v-else class="description call-out call-out--info">
+                An dieser Haltestelle gibt es keine Störungen an Rolltreppen oder Aufzügen.
+              </p>
+
+              <p class="description call-out call-out--info" v-if="data.stationInfo.Lageplan">
+                Laden Sie <a :href="data.stationInfo.Lageplan" target="_blank">hier</a> den Lageplan
+                der Haltestelle herunter.
+              </p>
             </div>
+          </template>
+
+          <div v-if="data.hasDisorder" class="disorder-list">
+            <h2>{{ totalNumberOfDisorders }} Störung{{ totalNumberOfDisorders > 1 ? 'en' : '' }}</h2>
+            <a :href="'#' + disorder.properties.Kennung" @click.prevent="selectMarker(disorder)"
+              v-for="disorder in data.disorders" :key="disorder.id" class="disorder-item">
+              <img :src="getIconSrc(disorder.type)" alt="" class="disorder-icon" />
+              <div class="disorder-info">
+                <h3>
+                  {{ disorder.type.isStairs ? 'Rolltreppe' : 'Aufzug' }}
+                  {{ disorder.properties.Bezeichnung }} defekt
+                </h3>
+                <p>Zuletzt aktualisiert: {{ formatDate(disorder.properties.timestamp) }}</p>
+              </div>
+            </a>
           </div>
+
+          <template v-if="data.properties.Linien">
+            <div class="description lines-info">
+              <p>
+                {{
+                  data.properties.Linien.length > 1
+                    ? 'Hier fahren die Linien'
+                    : 'Hier fährt die Linie'
+                }}
+              </p>
+              <div>
+                <span v-for="(linie, index) in data.properties.Linien.split(' ')" :key="index" class="lines"
+                  :class="[`line-${linie}`]" :style="{ backgroundColor: linienFarben[linie] || '#ccc', color: '#fff' }">
+                  {{ linie }}
+                </span>
+              </div>
+            </div>
+          </template>
         </template>
       </div>
     </div>
@@ -107,11 +108,23 @@
 </template>
 
 <script>
+import AnalyticsChart from '@/components/AnalyticsChart.vue'
+
 export default {
+  components: {
+    AnalyticsChart
+  },
   props: {
     data: Object,
     markers: Object,
     map: Object,
+    numOfStairs: { type: Number, default: 0 },
+    numOfStairsBroken: { type: Number, default: 0 },
+    numOfElevators: { type: Number, default: 0 },
+    numOfElevatorsBroken: { type: Number, default: 0 },
+    numOfStations: { type: Number, default: 0 },
+    numOfStationsBroken: { type: Number, default: 0 },
+    showStats: { type: Boolean, default: false }
   },
   data() {
     return {
@@ -243,7 +256,8 @@ export default {
 .modal-content {
   background: #222;
   /* backdrop-filter: blur(8px); */
-  padding: 0; /* Padding wird von Header und Body übernommen */
+  padding: 0;
+  /* Padding wird von Header und Body übernommen */
   border-radius: 10px;
   max-width: 500px;
   width: 90%;
@@ -255,13 +269,15 @@ export default {
 }
 
 .modal-header {
-  position: sticky; /* Fixiert den Header im Modal */
+  position: sticky;
+  /* Fixiert den Header im Modal */
   top: 0;
   left: 0;
   width: 100%;
   padding: 1.5rem;
   background: rgba(0, 0, 0, 0.25);
-  z-index: 10; /* Damit er über dem Body bleibt */
+  z-index: 10;
+  /* Damit er über dem Body bleibt */
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -272,10 +288,13 @@ export default {
 }
 
 .modal-body {
-  flex: 1; /* Füllt den restlichen Platz aus */
-  overflow-y: auto; /* Nur der Body ist scrollbar */
+  flex: 1;
+  /* Füllt den restlichen Platz aus */
+  overflow-y: auto;
+  /* Nur der Body ist scrollbar */
   padding: 1.5rem;
-  max-height: calc(80vh - 60px); /* Max Höhe berechnen */
+  max-height: calc(80vh - 60px);
+  /* Max Höhe berechnen */
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
@@ -316,6 +335,11 @@ export default {
 
 .close-button:hover .close-button--line {
   background-color: #00bd7e;
+}
+
+.stats-section {
+  width: 100%;
+  margin-bottom: 0.5rem;
 }
 
 .call-outs {
@@ -402,12 +426,15 @@ export default {
 }
 
 .lines {
-  display: inline-block; /* Wichtig für transform */
+  display: inline-block;
+  /* Wichtig für transform */
   padding: 0 0.75rem;
   border-radius: 0.5rem;
-  transition: transform 0.2s ease-in-out; /* Sanfte Animation */
+  transition: transform 0.2s ease-in-out;
+  /* Sanfte Animation */
   cursor: pointer;
 }
+
 .lines:hover {
   transform: scale(1.2);
 }
