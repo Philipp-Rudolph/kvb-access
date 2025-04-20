@@ -3,29 +3,87 @@ import L from 'leaflet'
 const setupMap = {
   map: null,
   markerClusterGroup: null,
+  darkMode: true,
 
   /**
-   *
-   * @param {*} containerId
-   * @param {*} initialCoordinates
-   * @param {int} zoomLevel
-   * @returns
+   * Initialisiert die Karte mit den angegebenen Parametern
+   * @param {HTMLElement} containerId - Das DOM-Element, in dem die Karte gerendert wird
+   * @param {L.MarkerClusterGroup} markerCluster - MarkerClusterGroup für gruppierte Marker
+   * @param {Array} initialCoordinates - Initiale Koordinaten [Lat, Lng]
+   * @param {int} zoomLevel - Initiales Zoom-Level
+   * @param {boolean} darkMode - Aktiviert/Deaktiviert den Dark Mode
+   * @returns {L.Map} Die initialisierte Karte
    */
-  init(containerId, markerCluster, initialCoordinates = [50.9413, 6.9583], zoomLevel = 13) {
-    this.map = L.map(containerId).setView(initialCoordinates, zoomLevel)
-    this.markerClusterGroup = markerCluster
+  init(
+    containerId,
+    markerCluster,
+    initialCoordinates = [50.9413, 6.9583],
+    zoomLevel = 13,
+    darkMode = true,
+  ) {
+    this.darkMode = darkMode
 
-    // Add OpenStreetMap tiles
-    const tileLayer = L.tileLayer('https://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png', {
-      maxZoom: 19,
-      attribution:
-        '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, Tiles style by <a href="https://www.hotosm.org/" target="_blank">Humanitarian OpenStreetMap Team</a> hosted by <a href="https://openstreetmap.fr/" target="_blank">OpenStreetMap France</a>',
-    })
-    tileLayer.addTo(this.map)
+    // Stelle sicher, dass der Container eine Höhe hat
+    if (containerId && typeof containerId === 'object' && containerId.style) {
+      if (!containerId.style.height) {
+        console.warn('Der Karten-Container hat keine Höhe. Setze auf 100vh.')
+        containerId.style.height = '100vh'
+      }
+    }
 
-    return this.map
+    try {
+      // Initialisiere die Karte mit smoothen Zoom-Optionen
+      this.map = L.map(containerId, {
+        zoomSnap: 0.5, // Zoom kann in 0.1er-Schritten erfolgen statt ganzzahlig
+        zoomDelta: 0.5, // Mausrad-Zoom ändert sich in 0.5er-Schritten
+        wheelDebounceTime: 40, // Debounce für glatteren Zoom
+        wheelPxPerZoomLevel: 60, // Wie viele Pixel Scrolling für eine Zoom-Änderung nötig sind
+        fadeAnimation: true, // Aktiviere Fade-Animationen
+        zoomAnimation: true, // Aktiviere Zoom-Animationen
+        inertia: true, // Aktiviere Trägheitseffekt beim Ziehen
+        inertiaDeceleration: 3000, // Langsamere Abbremsung für glatteren Effekt
+        maxZoom: 20, // Maximaler Zoom-Level
+        minZoom: 2, // Minimaler Zoom-Level
+      })
+
+      if (this.tileLayer && this.map) {
+        this.map.removeLayer(this.tileLayer)
+      }
+
+      const tileUrl = 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png'
+
+      this.tileLayer = L.tileLayer(tileUrl, {
+        maxZoom: 19,
+        attribution:
+          '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/">CARTO</a>',
+      })
+
+      if (this.map) {
+        this.tileLayer.addTo(this.map)
+      }
+
+      // Setze initiale Position mit Animation
+      this.map.setView(initialCoordinates, zoomLevel)
+
+      // MarkerCluster hinzufügen
+      this.markerClusterGroup = markerCluster
+      if (this.markerClusterGroup) {
+        this.map.addLayer(this.markerClusterGroup)
+      }
+
+      // Trigger eines resize-Events nach kurzer Verzögerung
+      setTimeout(() => {
+        if (this.map) {
+          this.map.invalidateSize()
+        }
+      }, 100)
+
+      return this.map
+    } catch (error) {
+      console.error('Fehler bei der Karteninitialisierung:', error)
+      throw error
+    }
   },
-
   /**
    *
    * @param {string} iconUrl
@@ -111,6 +169,23 @@ const setupMap = {
     return markers
   },
 
+  /**
+   * Zoomt sanft zu einer bestimmten Position
+   * @param {Array} coordinates - Zielkoordinaten [Lat, Lng]
+   * @param {number} zoomLevel - Zielniveau des Zooms
+   * @param {Object} options - Optionen für die Animation
+   */
+  smoothZoomTo(coordinates, zoomLevel, options = {}) {
+    if (!this.map) return
+
+    const defaultOptions = {
+      animate: true,
+      duration: 1.5, // 1.5 Sekunden für die Animation
+      easeLinearity: 0.25, // Sanftere, nicht-lineare Animation
+    }
+
+    this.map.flyTo(coordinates, zoomLevel, { ...defaultOptions, ...options })
+  },
   /**
    *
    * @param {*} marker
