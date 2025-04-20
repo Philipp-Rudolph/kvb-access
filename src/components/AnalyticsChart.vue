@@ -109,54 +109,28 @@ export default {
 }
 
 /* Dark Mode Styles */
-.chart-container.dark-mode {
-  color: white;
+.chart-container {
+  color: var(--text-color);
 }
 
-.dark-mode .data-card {
-  background: rgba(255, 255, 255, 0.05);
+.data-card {
+  background: var(--background-color-darker);
 }
 
-.dark-mode .data-card:hover {
-  background: rgba(255, 255, 255, 0.1);
+.data-card:hover {
+  background: var(--hover-background);
 }
 
-.dark-mode .circle-bg {
-  stroke: rgba(255, 255, 255, 0.1);
+.circle-bg {
+  stroke: var(--hover-background);
 }
 
-.dark-mode .icon {
-  filter: invert(1);
+.icon {
+  filter: var(--filter-invert);
 }
 
-.dark-mode .stat-label {
-  color: rgba(255, 255, 255, 0.7);
-}
-
-/* Light Mode Styles */
-.chart-container.light-mode {
-  color: #222;
-}
-
-.light-mode .data-card {
-  background: rgba(0, 0, 0, 0.05);
-  border: 1px solid rgba(0, 0, 0, 0.1);
-}
-
-.light-mode .data-card:hover {
-  background: rgba(0, 0, 0, 0.08);
-}
-
-.light-mode .circle-bg {
-  stroke: rgba(0, 0, 0, 0.1);
-}
-
-.light-mode .icon {
-  filter: none;
-}
-
-.light-mode .stat-label {
-  color: rgba(0, 0, 0, 0.7);
+.stat-label {
+  color: var(--gray-color);
 }
 
 /* Common Styles */

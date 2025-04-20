@@ -11,7 +11,8 @@
       :numOfStationsBroken="markers.disorder" :showStats="showStatsModal" :darkMode="darkMode" />
   </transition>
   <!-- Dark Mode Toggle -->
-  <button v-if="dataLoaded" @click="toggleDarkMode" class="theme-toggle-button" :class="{ 'light-mode': !darkMode }">
+  <button v-if="!isLoading && !isMarkerSelected && dataLoaded" @click="toggleDarkMode" class="theme-toggle-button"
+    :class="{ 'light-mode': !darkMode }">
     <img v-if="darkMode" src="/icons/sun.png" alt="Light Mode" class="theme-icon" />
     <img v-else src="/icons/moon.png" alt="Dark Mode" class="theme-icon" />
   </button>
@@ -88,18 +89,28 @@ export default {
     }
   },
 
-  // Lifecycle
   created() {
-    // Lade den Dark Mode Status aus dem Local Storage, falls vorhanden
+    // First check if user has a stored preference
     const savedDarkMode = localStorage.getItem('darkMode');
+
     if (savedDarkMode !== null) {
+      // Use the saved preference if available
       this.darkMode = savedDarkMode === 'true';
+    } else {
+      // Otherwise, detect system preference
+      const prefersDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      this.darkMode = prefersDarkMode;
+      // Save the initial state based on system preference
+      localStorage.setItem('darkMode', prefersDarkMode);
     }
 
-    // Setze die CSS-Klasse auf dem HTML-Element
-    document.documentElement.classList.toggle('light-mode', !this.darkMode);
-    document.documentElement.classList.toggle('dark-mode', this.darkMode);
+    // Apply the theme to document
+    this.applyTheme();
+
+    // Add listener for system theme changes
+    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', this.handleSystemThemeChange);
   },
+
 
   mounted() {
     console.log("MapView geladen");
@@ -110,11 +121,14 @@ export default {
   },
 
   beforeUnmount() {
-    // Aufräumen
+    // Clean up
     if (this.map) {
       this.map.remove();
       this.map = null;
     }
+
+    // Remove event listener
+    window.matchMedia('(prefers-color-scheme: dark)').removeEventListener('change', this.handleSystemThemeChange);
   },
 
   // Methods
@@ -354,28 +368,38 @@ export default {
       return stationMarkers.length;
     },
 
-    toggleDarkMode() {
-      // Aktualisiere den Dark Mode Status
-      this.darkMode = !this.darkMode;
-
-      // Speichere die Einstellung im Local Storage
-      localStorage.setItem('darkMode', this.darkMode);
-
-      // Aktualisiere die CSS-Klassen auf dem HTML-Element
+    applyTheme() {
+      // Apply theme classes to document
       document.documentElement.classList.toggle('light-mode', !this.darkMode);
       document.documentElement.classList.toggle('dark-mode', this.darkMode);
 
-      // Stelle sicher, dass setupMap den gleichen Status hat
-      if (setupMap.darkMode !== this.darkMode) {
+      // Make sure setupMap has the same theme if needed
+      if (setupMap && setupMap.darkMode !== this.darkMode) {
         setupMap.darkMode = this.darkMode;
       }
+    },
 
-      // Aktualisiere die Karte
-      document.querySelectorAll('.leaflet-tile-pane').forEach((tile) => {
-        tile.style.filter = this.darkMode ? 'invert(1)' : 'none';
-      });
+    handleSystemThemeChange(e) {
+      // Only update if user hasn't set a manual preference
+      if (!localStorage.getItem('darkMode')) {
+        this.darkMode = e.matches;
+        this.applyTheme();
+      }
+    },
+
+    toggleDarkMode() {
+      // Toggle the mode
+      this.darkMode = !this.darkMode;
+
+      // Save user preference to localStorage
+      localStorage.setItem('darkMode', this.darkMode);
+
+      // Apply the theme
+      this.applyTheme();
     },
   },
+
+
 }
 </script>
 
@@ -385,28 +409,6 @@ export default {
   width: 100%;
   background-color: var(--background-color);
   transition: background-color 0.3s ease;
-}
-
-:root {
-  --text-color: #222;
-  --background-color: #222;
-  --border-color: #444;
-  --highlight-color: #00bd7e;
-  --gray-color: rgba(255, 255, 255, 0.7);
-  --overlay-background: rgba(0, 0, 0, 0.5);
-  --button-background: rgba(245, 245, 245, 0.8);
-  --hover-background: rgba(255, 255, 255, 0.1);
-}
-
-.light-mode:root {
-  --text-color: #fff;
-  --background-color: #f5f5f5;
-  --border-color: #ddd;
-  --highlight-color: #00bd7e;
-  --gray-color: rgba(0, 0, 0, 0.7);
-  --overlay-background: rgba(255, 255, 255, 0.5);
-  --button-background: rgba(34, 34, 34, 0.8);
-  --hover-background: rgba(0, 0, 0, 0.05);
 }
 
 body {
@@ -439,6 +441,10 @@ body {
   /* Wichtig, damit die Verschiebung funktioniert */
 }
 
+.leaflet-tile-pane {
+  filter: var(--filter-invert-reverse);
+}
+
 .disorder:hover {
   height: 40px !important;
   width: 40px !important;
@@ -469,7 +475,6 @@ body {
 }
 
 .disorder {
-  filter: invert(0);
   background-color: #fff;
   box-shadow:
     0 0 100px rgba(255, 0, 0, 0.3),
@@ -477,7 +482,6 @@ body {
 }
 
 .disorder:hover {
-  filter: invert(0);
   background-color: #fff;
   box-shadow:
     0 0 100px rgba(255, 0, 0, 0.9),
@@ -587,8 +591,8 @@ body {
 
 }
 
-.light-mode .theme-icon {
-  filter: invert(1);
+.theme-icon {
+  filter: var(--filter-invert);
 }
 
 /* Style for the stats floating button */
@@ -618,9 +622,10 @@ body {
   width: 24px;
   height: 24px;
   object-fit: contain;
+  filter: var(--filter-invert);
 }
 
 .light-mode .stats-button-icon {
-  filter: invert(1);
+  filter: var(--filter-invert);
 }
 </style>

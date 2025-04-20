@@ -243,7 +243,7 @@ export default {
   height: 100dvh;
   top: 0;
   left: 0;
-  background: rgba(0, 0, 0, 0.5);
+  background: var(--overlay-background);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -259,80 +259,39 @@ export default {
   position: relative;
   display: flex;
   flex-direction: column;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 10px 25px var(--background-color-darker);
   transition: all 0.3s ease;
 }
 
 /* Dark Mode Styles */
 /* Dark Mode Styles - erhöhte Spezifität */
-.modal-content.dark-mode {
-  background-color: #222;
-  color: white;
+.modal-content {
+  background-color: var(--background-color);
+  color: var(--text-color);
 }
 
-.modal-content.dark-mode .modal-header {
-  background: rgba(0, 0, 0, 0.25);
+.modal-content .modal-header {
+  background: var(--hover-background);
 }
 
-.modal-content.dark-mode .close-button--line {
-  background-color: rgb(255, 255, 255);
+.modal-content .close-button--line {
+  background-color: var(--text-color);
 }
 
-.modal-content.dark-mode .call-out--alert {
-  background: rgba(255, 0, 0, 0.1);
+.modal-content .call-out--alert {
+  background: var(--alert-color);
 }
 
-.modal-content.dark-mode .call-out--info {
-  background: rgba(0, 0, 255, 0.1);
+.modal-content .call-out--info {
+  background: var(--info-color);
 }
 
-.modal-content.dark-mode .disorder-item {
-  background: rgba(255, 255, 255, 0.1);
+.modal-content .disorder-item {
+  background: var(--hover-background);
 }
 
-.modal-content.dark-mode .disorder-icon {
-  filter: invert(1);
-}
-
-.modal-content.dark-mode .disorder-info p {
-  color: rgba(255, 255, 255, 0.5);
-}
-
-/* Light Mode Styles */
-.light-mode {
-  background-color: #f5f5f5;
-  color: #222;
-}
-
-.light-mode .modal-header {
-  background: rgba(0, 0, 0, 0.05);
-}
-
-.light-mode .close-button--line {
-  background-color: #333;
-}
-
-.light-mode .call-out--alert {
-  background: rgba(255, 0, 0, 0.05);
-  border: 1px solid rgba(255, 0, 0, 0.1);
-}
-
-.light-mode .call-out--info {
-  background: rgba(0, 0, 255, 0.05);
-  border: 1px solid rgba(0, 0, 255, 0.1);
-}
-
-.light-mode .disorder-item {
-  background: rgba(0, 0, 0, 0.05);
-  border: 1px solid rgba(0, 0, 0, 0.1);
-}
-
-.light-mode .disorder-icon {
-  filter: none;
-}
-
-.light-mode .disorder-info p {
-  color: rgba(0, 0, 0, 0.5);
+.modal-content .disorder-info p {
+  color: var(--gray-color);
 }
 
 /* Common Styles */
@@ -396,7 +355,7 @@ export default {
 }
 
 .close-button:hover .close-button--line {
-  background-color: #00bd7e;
+  background-color: var(--highlight-color);
 }
 
 .stats-section {
@@ -440,6 +399,7 @@ export default {
   width: 40px;
   height: 40px;
   margin-right: 1rem;
+  filter: var(--filter-invert);
 }
 
 .disorder-info {
@@ -450,8 +410,8 @@ export default {
 .disorder-info h3 {
   margin-top: 0;
   margin-bottom: 0.25rem;
-  font-size: 1rem;
-  color: inherit;
+  font-size: .9rem;
+  color: var(--text-color);
 }
 
 .disorder-info p {
@@ -461,6 +421,7 @@ export default {
 .lines-info {
   display: flex;
   flex-direction: column;
+  align-items: center;
   gap: 1rem;
 }
 

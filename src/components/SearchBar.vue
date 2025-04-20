@@ -97,53 +97,28 @@ export default {
 }
 
 /* Dark Mode Styles */
-.light-mode .search-bar__input>input {
-  background-color: rgba(34, 34, 34, 0.95);
-  color: white;
+.search-bar__input>input {
+  background-color: var(--button-background);
+  color: var(--text-color);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid var(--button-background);
 }
 
-.light-mode .search-bar__results {
-  background-color: rgba(34, 34, 34, 0.95);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+.search-bar__results {
+  background-color: var(--background-color);
+  border: 1px solid var(--button-background);
+  box-shadow: 0 8px 24px var(--button-background);
 }
 
-.light-mode .search-bar__result {
-  background-color: rgba(40, 40, 40, 0.95);
-  color: white;
+.search-bar__result {
+  background-color: var(--background-color-darker);
+  color: var(--text-color);
   border-left: 3px solid transparent;
 }
 
-.light-mode .search-bar__result:hover {
-  background-color: rgba(50, 50, 50, 0.95);
-  border-left: 3px solid #00bd7e;
-}
-
-/* Light Mode Styles */
-.dark-mode .search-bar__input>input {
-  background-color: rgba(255, 255, 255, 0.95);
-  color: #222;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  border: 1px solid rgba(0, 0, 0, 0.1);
-}
-
-.dark-mode .search-bar__results {
-  background-color: rgba(255, 255, 255, 0.95);
-  border: 1px solid rgba(0, 0, 0, 0.1);
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
-}
-
-.dark-mode .search-bar__result {
-  background-color: rgba(245, 245, 245, 0.95);
-  color: #222;
-  border-left: 3px solid transparent;
-}
-
-.dark-mode .search-bar__result:hover {
-  background-color: rgba(235, 235, 235, 0.95);
-  border-left: 3px solid #00bd7e;
+.search-bar__result:hover {
+  background-color: var(--background-color-darker);
+  border-left: 3px solid var(--highlight-color);
 }
 
 /* Common Styles */
@@ -165,12 +140,8 @@ export default {
   color: transparent;
 }
 
-.light-mode .search-bar__input>input::placeholder {
-  color: rgba(255, 255, 255, 0.6);
-}
-
-.dark-mode .search-bar__input>input::placeholder {
-  color: rgba(0, 0, 0, 0.4);
+.search-bar__input>input::placeholder {
+  color: var(--gray-color);
 }
 
 .search-bar__results {
@@ -202,16 +173,6 @@ export default {
 /* Scrollbar Styles */
 .search-bar__results::-webkit-scrollbar {
   width: 6px;
-}
-
-.dark-mode .search-bar__results::-webkit-scrollbar-thumb {
-  background-color: rgba(255, 255, 255, 0.3);
-  border-radius: 3px;
-}
-
-.light-mode .search-bar__results::-webkit-scrollbar-thumb {
-  background-color: rgba(0, 0, 0, 0.2);
-  border-radius: 3px;
 }
 
 .search-bar__results::-webkit-scrollbar-track {
