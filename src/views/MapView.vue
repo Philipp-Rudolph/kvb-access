@@ -405,7 +405,7 @@ export default {
 
 <style>
 #map {
-  height: 100dvh;
+  height: 100%;
   width: 100%;
   background-color: var(--background-color);
   transition: background-color 0.3s ease;

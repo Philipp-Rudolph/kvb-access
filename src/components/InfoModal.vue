@@ -239,8 +239,8 @@ export default {
 <style scoped>
 .modal-overlay {
   position: fixed;
-  width: 100vw;
-  height: 100dvh;
+  width: 100%;
+  height: 100%;
   top: 0;
   left: 0;
   background: var(--overlay-background);

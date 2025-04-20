@@ -27,7 +27,7 @@ const setupMap = {
     if (containerId && typeof containerId === 'object' && containerId.style) {
       if (!containerId.style.height) {
         console.warn('Der Karten-Container hat keine Höhe. Setze auf 100vh.')
-        containerId.style.height = '100vh'
+        containerId.style.height = '100dwvh'
       }
     }
 

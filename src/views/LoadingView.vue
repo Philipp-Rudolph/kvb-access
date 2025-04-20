@@ -42,7 +42,7 @@ export default {
   align-items: center;
   flex-direction: column;
   gap: 2.5rem;
-  height: 100dvh;
+  height: 100%;
   width: 100%;
   position: absolute;
   top: 0;
