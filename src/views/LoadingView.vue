@@ -23,17 +23,15 @@ export default {
   },
   props: {
     error: {
-      type: Object,
-      default: null,
+      type: [Object, Boolean], default: false
     },
     msg: {
-      type: String,
-      default: '',
+      type: String, default: 'Wird geladen...'
     },
   },
   computed: {},
   methods: {},
-  mounted() {},
+  mounted() { },
 }
 </script>
 
@@ -50,7 +48,8 @@ export default {
   top: 0;
   left: 0;
   z-index: 9999;
-  background: linear-gradient(135deg, #110101, #070023); /* Gradient background */
+  background: linear-gradient(135deg, #110101, #070023);
+  /* Gradient background */
   color: #fff;
 }
 
@@ -69,7 +68,8 @@ p {
   text-align: center;
   font-size: 1rem;
   font-weight: bold;
-  text-shadow: 0 0 10px rgba(0, 255, 255, 0.5); /* Text glow */
+  text-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
+  /* Text glow */
   animation: fadeIn 2s ease-in-out infinite;
 }
 
@@ -78,10 +78,12 @@ p {
     transform: rotate(0deg);
     border-top: 5px solid #34dbc8;
   }
+
   50% {
     transform: rotate(180deg);
     border-top: 5px solid #ff7e67;
   }
+
   100% {
     transform: rotate(360deg);
     border-top: 5px solid #34dbc8;
@@ -90,10 +92,12 @@ p {
 
 /* Add bounce effect to the spinner */
 @keyframes bounce {
+
   0%,
   100% {
     transform: rotate(360deg) translateY(0);
   }
+
   50% {
     transform: rotate(360deg) translateY(-15px);
   }
@@ -104,9 +108,11 @@ p {
   0% {
     opacity: 0;
   }
+
   50% {
     opacity: 1;
   }
+
   100% {
     opacity: 0;
   }
