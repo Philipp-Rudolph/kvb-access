@@ -97,51 +97,51 @@ export default {
 }
 
 /* Dark Mode Styles */
-.dark-mode .search-bar__input>input {
+.light-mode .search-bar__input>input {
   background-color: rgba(34, 34, 34, 0.95);
   color: white;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
   border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
-.dark-mode .search-bar__results {
+.light-mode .search-bar__results {
   background-color: rgba(34, 34, 34, 0.95);
   border: 1px solid rgba(255, 255, 255, 0.1);
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
 }
 
-.dark-mode .search-bar__result {
+.light-mode .search-bar__result {
   background-color: rgba(40, 40, 40, 0.95);
   color: white;
   border-left: 3px solid transparent;
 }
 
-.dark-mode .search-bar__result:hover {
+.light-mode .search-bar__result:hover {
   background-color: rgba(50, 50, 50, 0.95);
   border-left: 3px solid #00bd7e;
 }
 
 /* Light Mode Styles */
-.light-mode .search-bar__input>input {
+.dark-mode .search-bar__input>input {
   background-color: rgba(255, 255, 255, 0.95);
   color: #222;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   border: 1px solid rgba(0, 0, 0, 0.1);
 }
 
-.light-mode .search-bar__results {
+.dark-mode .search-bar__results {
   background-color: rgba(255, 255, 255, 0.95);
   border: 1px solid rgba(0, 0, 0, 0.1);
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
 }
 
-.light-mode .search-bar__result {
+.dark-mode .search-bar__result {
   background-color: rgba(245, 245, 245, 0.95);
   color: #222;
   border-left: 3px solid transparent;
 }
 
-.light-mode .search-bar__result:hover {
+.dark-mode .search-bar__result:hover {
   background-color: rgba(235, 235, 235, 0.95);
   border-left: 3px solid #00bd7e;
 }
@@ -165,11 +165,11 @@ export default {
   color: transparent;
 }
 
-.dark-mode .search-bar__input>input::placeholder {
+.light-mode .search-bar__input>input::placeholder {
   color: rgba(255, 255, 255, 0.6);
 }
 
-.light-mode .search-bar__input>input::placeholder {
+.dark-mode .search-bar__input>input::placeholder {
   color: rgba(0, 0, 0, 0.4);
 }
 

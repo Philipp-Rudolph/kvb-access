@@ -1,6 +1,6 @@
 <template>
-  <div class="chart-container">
-    <!-- Neues Card-Layout statt Tabelle -->
+  <div class="chart-container" :class="{ 'dark-mode': darkMode, 'light-mode': !darkMode }">
+    <!-- Card-Layout für Statistiken -->
     <div class="data-cards">
       <div class="data-card" v-for="(chart, index) in charts" :key="index">
         <div class="chart-wrapper">
@@ -47,6 +47,7 @@ export default {
     numOfStations: { type: Number, required: true },
     numOfStationsBroken: { type: Number, required: true },
     isCollapsed: { type: Boolean, default: false },
+    darkMode: { type: Boolean, default: true },
   },
   computed: {
     charts() {
@@ -104,8 +105,61 @@ export default {
   flex-direction: column;
   padding: 1rem;
   border-radius: 0.5rem;
+  transition: all 0.3s ease;
 }
 
+/* Dark Mode Styles */
+.chart-container.dark-mode {
+  color: white;
+}
+
+.dark-mode .data-card {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.dark-mode .data-card:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.dark-mode .circle-bg {
+  stroke: rgba(255, 255, 255, 0.1);
+}
+
+.dark-mode .icon {
+  filter: invert(1);
+}
+
+.dark-mode .stat-label {
+  color: rgba(255, 255, 255, 0.7);
+}
+
+/* Light Mode Styles */
+.chart-container.light-mode {
+  color: #222;
+}
+
+.light-mode .data-card {
+  background: rgba(0, 0, 0, 0.05);
+  border: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.light-mode .data-card:hover {
+  background: rgba(0, 0, 0, 0.08);
+}
+
+.light-mode .circle-bg {
+  stroke: rgba(0, 0, 0, 0.1);
+}
+
+.light-mode .icon {
+  filter: none;
+}
+
+.light-mode .stat-label {
+  color: rgba(0, 0, 0, 0.7);
+}
+
+/* Common Styles */
 .data-cards {
   display: flex;
   flex-direction: column;
@@ -116,14 +170,9 @@ export default {
 .data-card {
   display: flex;
   align-items: center;
-  background: rgba(255, 255, 255, 0.05);
   border-radius: 0.5rem;
   padding: 1rem;
   transition: background-color 0.2s;
-}
-
-.data-card:hover {
-  background: rgba(255, 255, 255, 0.1);
 }
 
 .chart-wrapper {
@@ -148,7 +197,6 @@ export default {
 
 .circle-bg {
   fill: none;
-  stroke: rgba(255, 255, 255, 0.1);
   stroke-width: 3.8;
 }
 
@@ -181,7 +229,6 @@ export default {
   border-radius: 50%;
   opacity: 1;
   padding: 3px;
-  filter: invert(1);
   background-color: transparent;
 }
 
@@ -205,11 +252,6 @@ export default {
   display: flex;
   align-items: center;
   gap: 0.5rem;
-}
-
-.stat-label {
-  color: rgba(255, 255, 255, 0.7);
-  font-size: 0.85rem;
 }
 
 .stat-value {

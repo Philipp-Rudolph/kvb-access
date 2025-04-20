@@ -365,55 +365,16 @@ export default {
       document.documentElement.classList.toggle('light-mode', !this.darkMode);
       document.documentElement.classList.toggle('dark-mode', this.darkMode);
 
-      // Wende Filter direkt auf alle Kacheln an
-      const tiles = document.querySelectorAll('.leaflet-tile');
-      tiles.forEach(tile => {
-        // Wichtig: Setze den Filter direkt als style-Attribut, um CSS-Spezifität zu überschreiben
-        if (this.darkMode) {
-          tile.style.filter = 'invert(1)';
-        } else {
-          tile.style.filter = 'invert(0)';
-        }
+      // Stelle sicher, dass setupMap den gleichen Status hat
+      if (setupMap.darkMode !== this.darkMode) {
+        setupMap.darkMode = this.darkMode;
+      }
+
+      // Aktualisiere die Karte
+      document.querySelectorAll('.leaflet-tile-pane').forEach((tile) => {
+        tile.style.filter = this.darkMode ? 'invert(1)' : 'none';
       });
-
-      // Für neu geladene Kacheln auch den CSS-Style anpassen
-      const styleId = 'leaflet-tile-style';
-      let styleEl = document.getElementById(styleId);
-
-      // Falls noch kein Style-Element existiert, erstelle es
-      if (!styleEl) {
-        styleEl = document.createElement('style');
-        styleEl.id = styleId;
-        document.head.appendChild(styleEl);
-      }
-
-      // Definiere die CSS-Regeln basierend auf dem aktuellen Modus
-      const cssRule = this.darkMode
-        ? '.leaflet-tile { filter: invert(1) }'
-        : '.leaflet-tile { filter: invert(0); }';
-
-      styleEl.textContent = cssRule;
-
-      // Wechsle die Tile-Layer-URL wenn nötig
-      if (setupMap.map && setupMap.tileLayer) {
-        setupMap.setTileLayer(this.darkMode);
-      }
-
-      // Aktualisiere die Kartengröße nach dem Umschalten
-      if (this.map) {
-        // Kleine Verzögerung, um sicherzustellen, dass die Änderungen angewendet wurden
-        setTimeout(() => {
-          this.map.invalidateSize();
-
-          // Stelle sicher, dass das Scrollen funktioniert
-          if (this.map.scrollWheelZoom) {
-            this.map.scrollWheelZoom.enable();
-          }
-        }, 100);
-      }
-
-      return this.darkMode;
-    }
+    },
   },
 }
 </script>
@@ -427,24 +388,24 @@ export default {
 }
 
 :root {
-  --text-color: #fff;
-  --background-color: #f5f5f5;
+  --text-color: #222;
+  --background-color: #222;
   --border-color: #444;
   --highlight-color: #00bd7e;
   --gray-color: rgba(255, 255, 255, 0.7);
   --overlay-background: rgba(0, 0, 0, 0.5);
-  --button-background: rgba(34, 34, 34, 0.8);
+  --button-background: rgba(245, 245, 245, 0.8);
   --hover-background: rgba(255, 255, 255, 0.1);
 }
 
 .light-mode:root {
-  --text-color: #222;
-  --background-color: #222;
+  --text-color: #fff;
+  --background-color: #f5f5f5;
   --border-color: #ddd;
   --highlight-color: #00bd7e;
   --gray-color: rgba(0, 0, 0, 0.7);
   --overlay-background: rgba(255, 255, 255, 0.5);
-  --button-background: rgba(245, 245, 245, 0.8);
+  --button-background: rgba(34, 34, 34, 0.8);
   --hover-background: rgba(0, 0, 0, 0.05);
 }
 
@@ -603,7 +564,6 @@ body {
 .theme-icon {
   width: 24px;
   height: 24px;
-  filter: invert(1);
 }
 
 @media screen and (max-width: 768px) {
@@ -628,7 +588,7 @@ body {
 }
 
 .light-mode .theme-icon {
-  filter: none;
+  filter: invert(1);
 }
 
 /* Style for the stats floating button */
@@ -658,10 +618,9 @@ body {
   width: 24px;
   height: 24px;
   object-fit: contain;
-  filter: invert(1);
 }
 
 .light-mode .stats-button-icon {
-  filter: none;
+  filter: invert(1);
 }
 </style>
