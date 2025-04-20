@@ -1,58 +1,37 @@
 <template>
-  <div class="flex-wrapper collapsible">
-    <div class="header" @click="toggleCollapse">
-      <span class="spacer"></span>
-      <p>Statistik</p>
-      <!-- Chevron für das Ein- & Ausklappen -->
-      <div class="chevron" :class="{ collapse: localIsCollapsed }">
-        <div class="chevron--line"></div>
-        <div class="chevron--line"></div>
-      </div>
-    </div>
-
-    <!-- Der einklappbare Bereich -->
-    <div class="collapsible">
-      <div class="chart-container">
-        <div class="charts">
-          <div class="single-chart" v-for="(chart, index) in charts" :key="index">
-            <svg viewBox="0 0 36 36" class="circular-chart">
-              <path
-                class="circle-bg"
-                d="M18 2.0845a 15.9155 15.9155 0 0 1 0 31.831a 15.9155 15.9155 0 0 1 0 -31.831"
-              />
-              <path
-                class="circle"
-                :stroke-dasharray="`${chart.percentage}, 100`"
-                :stroke="chart.strokeColor"
-                d="M18 2.0845a 15.9155 15.9155 0 0 1 0 31.831a 15.9155 15.9155 0 0 1 0 -31.831"
-              />
-            </svg>
+  <div class="chart-container">
+    <!-- Neues Card-Layout statt Tabelle -->
+    <div class="data-cards">
+      <div class="data-card" v-for="(chart, index) in charts" :key="index">
+        <div class="chart-wrapper">
+          <svg viewBox="0 0 36 36" class="circular-chart">
+            <path class="circle-bg" d="M18 2.0845a 15.9155 15.9155 0 0 1 0 31.831a 15.9155 15.9155 0 0 1 0 -31.831" />
+            <path class="circle" :stroke-dasharray="`${chart.percentage}, 100`" :stroke="chart.strokeColor"
+              d="M18 2.0845a 15.9155 15.9155 0 0 1 0 31.831a 15.9155 15.9155 0 0 1 0 -31.831" />
+          </svg>
+          <div class="icon-wrapper">
             <img :src="chart.icon" alt="icon" class="icon" />
           </div>
         </div>
-      </div>
 
-      <!-- Tabelle -->
-      <table class="data-table">
-        <thead>
-          <tr>
-            <th>Kategorie</th>
-            <th>Defekt</th>
-            <th>Gesamt</th>
-            <th>In Betrieb</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr v-for="(chart, index) in charts" :key="index">
-            <td class="data-table--label">
-              <small>{{ chart.label }}</small>
-            </td>
-            <td>{{ chart.number }}</td>
-            <td>{{ chart.total }}</td>
-            <td :style="{ color: chart.strokeColor }">{{ chart.percentage }}%</td>
-          </tr>
-        </tbody>
-      </table>
+        <div class="card-info">
+          <h3 class="card-title">{{ chart.label }}</h3>
+          <div class="card-stats">
+            <div class="stat-item">
+              <span class="stat-label">Defekt:</span>
+              <span class="stat-value">{{ chart.number }}</span>
+            </div>
+            <div class="stat-item">
+              <span class="stat-label">Gesamt:</span>
+              <span class="stat-value">{{ chart.total }}</span>
+            </div>
+            <div class="stat-item">
+              <span class="stat-label">In Betrieb:</span>
+              <span class="stat-value" :style="{ color: chart.strokeColor }">{{ chart.percentage }}%</span>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </template>
@@ -67,32 +46,9 @@ export default {
     numOfElevatorsBroken: { type: Number, required: true },
     numOfStations: { type: Number, required: true },
     numOfStationsBroken: { type: Number, required: true },
-    isCollapsed: { type: Boolean, default: true },
-  },
-  data() {
-    return {
-      localIsCollapsed: this.isCollapsed,
-    }
-  },
-  watch: {
-    isCollapsed(newVal) {
-      this.localIsCollapsed = newVal
-    },
+    isCollapsed: { type: Boolean, default: false },
   },
   computed: {
-    // async percentageBroken(brokenItems, totalItems) {
-    //   console.log(brokenItems, totalItems)
-    //   return Math.abs(Math.ceil((brokenItems / totalItems) * 100) - 100)
-    // },
-    // percentageStairsBroken() {
-    //   return Math.abs(Math.ceil((this.numOfStairsBroken / this.numOfStairs) * 100) - 100)
-    // },
-    // percentageElevatorsBroken() {
-    //   return Math.abs(Math.ceil((this.numOfElevatorsBroken / this.numOfElevators) * 100) - 100)
-    // },
-    // percentageStationsBroken() {
-    //   return Math.abs(Math.ceil((this.numOfStationsBroken / this.numOfStations) * 100) - 100)
-    // },
     charts() {
       return [
         {
@@ -132,10 +88,6 @@ export default {
     percentageBroken(brokenItems, totalItems) {
       return Math.abs(Math.ceil((brokenItems / totalItems) * 100) - 100)
     },
-    toggleCollapse() {
-      this.localIsCollapsed = !this.localIsCollapsed
-      this.$emit('isCollapsed', this.localIsCollapsed) // ✅ Event an Parent senden
-    },
     getStrokeColor(percentage) {
       if (percentage > 80) return '#00bd7e'
       if (percentage > 60) return '#ffcc00'
@@ -146,134 +98,58 @@ export default {
 </script>
 
 <style scoped>
-.flex-wrapper {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  flex-direction: column;
-  padding: 20px;
-  background-color: #222;
-  /* background: rgba(0, 0, 0, 0.6); */
-  /* backdrop-filter: blur(1.5px); */
-  border-radius: 5px 5px 0 0;
-  color: white;
-  text-align: center;
-  max-width: 500px;
-  width: 100%;
-  height: auto;
-  margin: auto;
-
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  margin: auto;
-
-  z-index: 1000;
-
-  &:hover {
-    backdrop-filter: blur(5px);
-  }
-}
-
-.header {
-  width: 100%;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 0 1rem;
-
-  .spacer {
-    width: 32px;
-  }
-}
-
-/* Chevron Button */
-.chevron {
-  width: 32px;
-  height: 32px;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: transform 0.3s ease;
-
-  transform: rotate(180deg);
-
-  &:hover {
-    .chevron--line {
-      background-color: #00bd7e;
-    }
-  }
-}
-
-.chevron.collapse {
-  transform: rotate(0deg);
-}
-
-.chevron--line {
-  position: absolute;
-  width: 14px;
-  height: 3px;
-  background-color: white;
-  border-radius: 2px;
-  transition: background-color 0.2s;
-
-  &:nth-child(1) {
-    transform: rotate(45deg) translate(3px, 0px);
-  }
-
-  &:nth-child(2) {
-    transform: rotate(-45deg) translate(-6px, -3px);
-  }
-}
-
-/* Einklappbare Sektion */
-.collapsible {
-  overflow: hidden;
-  max-height: 500px; /* Anpassbar */
-  transition: all 0.4s ease-in-out;
-  width: 100%;
-}
-
-.collapsible.collapsed {
-  max-height: 0;
-}
 .chart-container {
   width: 100%;
-  height: 100%;
   display: flex;
   flex-direction: column;
-  /* gap: 1rem; */
   padding: 1rem;
+  border-radius: 0.5rem;
 }
 
-.charts {
-  height: 100%;
-  width: 100%;
-  display: flex;
-  justify-content: space-around;
-  align-items: center;
-  gap: 1rem;
-}
-
-.single-chart {
-  height: 100%;
-  width: 100%;
+.data-cards {
   display: flex;
   flex-direction: column;
+  gap: 1rem;
+  width: 100%;
+}
+
+.data-card {
+  display: flex;
   align-items: center;
-  gap: 0.5rem;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 0.5rem;
+  padding: 1rem;
+  transition: background-color 0.2s;
+}
+
+.data-card:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.chart-wrapper {
+  position: relative;
+  width: 60px;
+  height: 60px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-right: 1rem;
+  flex-shrink: 0;
 }
 
 .circular-chart {
-  max-width: 80px;
+  max-width: 60px;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
 }
 
 .circle-bg {
   fill: none;
+  stroke: rgba(255, 255, 255, 0.1);
   stroke-width: 3.8;
-  transition: stroke 0.3s;
 }
 
 .circle {
@@ -289,48 +165,62 @@ export default {
   }
 }
 
-.percentage {
-  fill: #fff;
-  font-size: 0.5em;
-  text-anchor: middle;
-  z-index: 10000;
+.icon-wrapper {
+  position: absolute;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1;
 }
 
 .icon {
-  width: 40px;
-  height: 40px;
+  width: 24px;
+  height: 24px;
   border-radius: 50%;
-  box-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
-  transform: translate(0px, 22px);
   opacity: 1;
+  padding: 3px;
+  filter: invert(1);
+  background-color: transparent;
 }
 
-/* Tabelle Styling */
-.data-table {
-  width: 100%;
-  border-collapse: collapse;
-  border-radius: 1rem;
-  overflow: hidden;
-  box-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
+.card-info {
+  flex: 1;
+}
 
-  &--label {
-    text-align: left;
+.card-title {
+  font-size: 1rem;
+  margin: 0 0 0.5rem 0;
+  font-weight: 500;
+}
+
+.card-stats {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.stat-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.stat-label {
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 0.85rem;
+}
+
+.stat-value {
+  font-weight: 500;
+  font-size: 0.9rem;
+}
+
+@media (max-width: 480px) {
+  .card-stats {
+    flex-direction: column;
+    gap: 0.3rem;
   }
-}
-
-.data-table th,
-.data-table td {
-  /* border: 1px solid white; */
-  padding: 8px;
-  text-align: center;
-}
-
-.data-table th {
-  background: rgba(255, 255, 255, 0.1);
-  font-weight: 400;
-}
-
-.data-table tr {
-  background: rgba(255, 255, 255, 0.05);
 }
 </style>
