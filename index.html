@@ -22,10 +22,16 @@
     />
     <meta
       name="keywords"
-      content="KVB, Barrierefreiheit, Rolltreppen Störung, Aufzüge defekt, Köln, Mobilitätseinschränkungen, öffentliche Verkehrsmittel"
+      content="KVB, Barrierefreiheit, Rolltreppen Störung, Aufzüge defekt, Köln, Mobilitätseinschränkungen, öffentliche Verkehrsmittel, Nahverkehr, Stadtbahn, Bus, Rollstuhl, Kinderwagen"
     />
     <meta name="author" content="KVB Access" />
     <meta name="robots" content="index, follow" />
+    <meta name="language" content="de" />
+    <meta name="geo.region" content="DE-NW" />
+    <meta name="geo.placename" content="Köln" />
+    <meta name="geo.position" content="50.9375;6.9603" />
+    <meta name="ICBM" content="50.9375, 6.9603" />
+    <link rel="canonical" href="https://www.kvb-access.de" />
 
     <!-- Open Graph für Social Media -->
     <meta property="og:title" content="KVB Access – Barrierefreie Routenplanung für Köln" />
@@ -36,6 +42,11 @@
     <meta property="og:url" content="https://www.kvb-access.de" />
     <meta property="og:type" content="website" />
     <meta property="og:image" content="https://www.kvb-access.de/preview.jpg" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="KVB Access - Live-Status von Rolltreppen und Aufzügen in Köln" />
+    <meta property="og:locale" content="de_DE" />
+    <meta property="og:site_name" content="KVB Access" />
 
     <!-- Twitter Cards -->
     <meta name="twitter:card" content="summary_large_image" />
@@ -45,6 +56,9 @@
       content="Live-Status defekter Rolltreppen & Aufzüge an KVB-Haltestellen. Jetzt deine Route barrierefrei planen!"
     />
     <meta name="twitter:image" content="https://www.kvb-access.de/preview.jpg" />
+    <meta name="twitter:image:alt" content="KVB Access - Live-Status von Rolltreppen und Aufzügen in Köln" />
+    <meta name="twitter:site" content="@kvb_access" />
+    <meta name="twitter:creator" content="@kvb_access" />
 
     <!-- Strukturierte Daten für Google -->
     <script type="application/ld+json">
@@ -54,9 +68,29 @@
         "name": "KVB Access",
         "url": "https://www.kvb-access.de",
         "description": "Live-Status defekter Rolltreppen und Aufzüge an KVB-Haltestellen in Köln. Hilft Menschen mit Mobilitätseinschränkungen bei der Routenplanung.",
-        "author": {
+        "inLanguage": "de-DE",
+        "spatialCoverage": {
+          "@type": "City",
+          "name": "Köln",
+          "geo": {
+            "@type": "GeoCoordinates",
+            "latitude": 50.9375,
+            "longitude": 6.9603
+          }
+        },
+        "audience": {
+          "@type": "Audience",
+          "audienceType": "Menschen mit Mobilitätseinschränkungen"
+        },
+        "provider": {
           "@type": "Organization",
-          "name": "KVB Access"
+          "name": "KVB Access",
+          "url": "https://www.kvb-access.de"
+        },
+        "potentialAction": {
+          "@type": "SearchAction",
+          "target": "https://www.kvb-access.de?search={search_term_string}",
+          "query-input": "required name=search_term_string"
         }
       }
     </script>
