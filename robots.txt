@@ -1,4 +1,7 @@
 User-agent: *
 Disallow: /admin/
 Disallow: /private/
+Disallow: /api/
 Allow: /
+
+Sitemap: https://www.kvb-access.de/sitemap.xml
